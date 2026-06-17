@@ -1,27 +1,22 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Thermometer,
-  Droplets,
   Zap,
-  Shield,
-  Lightbulb,
-  Wind,
-  Lock,
-  Camera,
-  Music,
-  ArrowUpRight,
+  Cpu,
   Activity,
+  Battery,
+  Sofa,
+  Bed,
+  Baby,
+  Box,
+  ChefHat,
+  Footprints,
+  Lightbulb,
+  Power,
+  ChevronRight,
+  ShieldCheck,
 } from "lucide-react";
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from "recharts";
 import { AppShell } from "@/components/AppShell";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,250 +24,144 @@ export const Route = createFileRoute("/")({
       { title: "Dashboard — Nosky HomeOS" },
       {
         name: "description",
-        content: "Real-time overview of your home — climate, energy, security and devices.",
+        content: "Luxury smart-home control center.",
       },
     ],
   }),
   component: Dashboard,
 });
 
-const energyData = [
-  { t: "00", kWh: 1.2 },
-  { t: "04", kWh: 0.8 },
-  { t: "08", kWh: 2.4 },
-  { t: "12", kWh: 3.1 },
-  { t: "14", kWh: 2.7 },
-  { t: "18", kWh: 4.2 },
-  { t: "20", kWh: 3.8 },
-  { t: "23", kWh: 2.1 },
-];
-
-const stats = [
+const overviewCards = [
+  { label: "Devices Online", value: "42", icon: Cpu, color: "text-blue-400" },
+  { label: "Active Devices", value: "12", icon: Activity, color: "text-emerald-400" },
+  { label: "Power Consumption", value: "1.2 kW", icon: Zap, color: "text-amber-400" },
   {
-    label: "Indoor Climate",
-    value: "21.5°",
-    sub: "Humidity 44%",
-    icon: Thermometer,
-    accent: "from-primary/30 to-primary/5",
-  },
-  {
-    label: "Energy Today",
-    value: "18.4 kWh",
-    sub: "−12% vs. yesterday",
-    icon: Zap,
-    accent: "from-warning/30 to-warning/5",
-  },
-  {
-    label: "Water Usage",
-    value: "126 L",
-    sub: "Within daily goal",
-    icon: Droplets,
-    accent: "from-chart-5/30 to-chart-5/5",
-  },
-  {
-    label: "Security",
-    value: "Armed",
-    sub: "All 8 sensors online",
-    icon: Shield,
-    accent: "from-success/30 to-success/5",
+    label: "Inverter Status",
+    value: "98%",
+    sub: "450W · On Solar",
+    icon: Battery,
+    color: "text-primary",
   },
 ];
 
-const scenes = [
-  { name: "Good Morning", desc: "Lights · Blinds · Coffee", icon: Lightbulb },
-  { name: "Cinema", desc: "Dim · TV · 5.1 audio", icon: Music },
-  { name: "Away", desc: "Lock · Arm · Eco", icon: Lock },
-  { name: "Sleep", desc: "Cool · Lock · Dim", icon: Wind },
+const initialRooms = [
+  { id: "parlor", name: "Parlor", icon: Sofa, devices: 8, status: "Online" },
+  { id: "master-bedroom", name: "Master Bedroom", icon: Bed, devices: 6, status: "Online" },
+  { id: "childrens-room", name: "Children's Room", icon: Baby, devices: 5, status: "Online" },
+  { id: "store-room", name: "Store Room", icon: Box, devices: 3, status: "Online" },
+  { id: "kitchen", name: "Kitchen", icon: ChefHat, devices: 10, status: "Online" },
+  { id: "passage", name: "Passage", icon: Footprints, devices: 4, status: "Online" },
 ];
 
-const devices = [
-  { name: "Living Room Lights", room: "Living Room", state: "78%", on: true, icon: Lightbulb },
-  { name: "Climate Control", room: "Bedroom", state: "21.5°", on: true, icon: Thermometer },
-  { name: "Front Door", room: "Entrance", state: "Locked", on: true, icon: Lock },
-  { name: "Patio Camera", room: "Outdoor", state: "Streaming", on: true, icon: Camera },
-  { name: "Kitchen Speaker", room: "Kitchen", state: "Idle", on: false, icon: Music },
-  { name: "Bedroom AC", room: "Bedroom", state: "Auto", on: true, icon: Wind },
-];
+function RoomCard({ room }: { room: (typeof initialRooms)[0] }) {
+  const [isActive, setIsActive] = useState(false);
+  const Icon = room.icon;
+
+  return (
+    <div className="glass group rounded-3xl p-6 hover:border-primary/40 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
+      <div className="flex justify-between items-start mb-6">
+        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 grid place-items-center group-hover:scale-110 transition-transform duration-500">
+          <Icon className="h-6 w-6 text-primary" />
+        </div>
+        <button
+          onClick={() => setIsActive(!isActive)}
+          className={`h-10 w-10 rounded-full grid place-items-center transition-all duration-300 ${
+            isActive
+              ? "bg-primary text-primary-foreground glow-primary scale-110"
+              : "bg-surface/60 text-muted-foreground hover:text-foreground border border-border"
+          }`}
+        >
+          <Lightbulb className={`h-5 w-5 ${isActive ? "fill-current" : ""}`} />
+        </button>
+      </div>
+
+      <div className="space-y-1 mb-6">
+        <h3 className="font-display text-xl font-semibold tracking-tight">{room.name}</h3>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-widest">
+          <span>{room.devices} Devices</span>
+          <span className="h-1 w-1 rounded-full bg-border" />
+          <span className="text-emerald-400 font-medium">{room.status}</span>
+        </div>
+      </div>
+
+      <Link
+        to="/rooms/$roomId"
+        params={{ roomId: room.id }}
+        className="w-full h-12 glass-strong rounded-xl flex items-center justify-center gap-2 text-sm font-medium hover:bg-primary/10 hover:border-primary/30 transition-all group/btn"
+      >
+        Open Room
+        <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+      </Link>
+    </div>
+  );
+}
 
 function Dashboard() {
   return (
-    <AppShell title="Good Evening, Noor" subtitle="Tuesday · June 17 · 19:42 · 22°C outdoors">
-      <div className="space-y-6 max-w-[1600px] mx-auto">
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((s) => {
-            const Icon = s.icon;
+    <AppShell title="Dashboard" subtitle="Nosky HomeOS Luxury Edition">
+      <div className="max-w-[1600px] mx-auto space-y-12">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2 animate-in fade-in slide-in-from-left-4 duration-700">
+            <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tight text-gradient">
+              Good Evening
+            </h2>
+            <p className="text-2xl md:text-3xl text-muted-foreground font-light">Welcome Home</p>
+          </div>
+
+          <div className="flex items-center gap-3 px-4 py-2 bg-success/10 border border-success/20 rounded-full animate-in fade-in slide-in-from-right-4 duration-700">
+            <span className="h-2.5 w-2.5 rounded-full bg-success pulse-ring" />
+            <span className="text-sm font-medium text-success tracking-wide">
+              All Systems Operational
+            </span>
+          </div>
+        </div>
+
+        {/* Overview Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {overviewCards.map((card, idx) => {
+            const Icon = card.icon;
             return (
               <div
-                key={s.label}
-                className="glass rounded-2xl p-5 relative overflow-hidden group hover:border-primary/30 transition-all"
+                key={card.label}
+                className="glass rounded-3xl p-6 relative overflow-hidden group hover:border-primary/30 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4"
+                style={{ animationDelay: `${idx * 100}ms` }}
               >
-                <div
-                  className={`absolute -top-12 -right-12 h-32 w-32 rounded-full bg-gradient-to-br ${s.accent} blur-2xl opacity-70 group-hover:opacity-100 transition-opacity`}
-                />
-                <div className="relative">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                      {s.label}
+                <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-colors" />
+                <div className="relative flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">
+                      {card.label}
                     </span>
-                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <Icon className={`h-5 w-5 ${card.color}`} />
                   </div>
-                  <div className="mt-3 font-display text-3xl font-semibold tracking-tight">
-                    {s.value}
+                  <div className="mt-auto">
+                    <div className="font-display text-3xl font-bold tracking-tight">
+                      {card.value}
+                    </div>
+                    {card.sub && (
+                      <div className="text-xs text-muted-foreground mt-1 font-medium">
+                        {card.sub}
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-1 text-xs text-muted-foreground">{s.sub}</div>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Energy + scenes */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="glass rounded-2xl p-6 lg:col-span-2">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 mb-4">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-                  <Activity className="h-3.5 w-3.5" />
-                  Energy Consumption · Today
-                </div>
-                <div className="mt-2 font-display text-2xl font-semibold">18.4 kWh</div>
-              </div>
-              <div className="shrink-0 flex gap-1 text-xs">
-                {["Day", "Week", "Month"].map((p, i) => (
-                  <button
-                    key={p}
-                    className={`px-3 py-1.5 rounded-lg transition-colors ${
-                      i === 0
-                        ? "bg-primary/20 text-foreground border border-primary/30"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={energyData}>
-                  <defs>
-                    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="oklch(0.66 0.18 255)" stopOpacity={0.5} />
-                      <stop offset="100%" stopColor="oklch(0.66 0.18 255)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="oklch(1 0 0 / 0.05)" vertical={false} />
-                  <XAxis
-                    dataKey="t"
-                    stroke="oklch(0.72 0.025 255)"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="oklch(0.72 0.025 255)"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                    width={30}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: "oklch(0.22 0.03 260 / 0.95)",
-                      border: "1px solid oklch(1 0 0 / 0.1)",
-                      borderRadius: "0.75rem",
-                      fontSize: "12px",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="kWh"
-                    stroke="oklch(0.66 0.18 255)"
-                    strokeWidth={2}
-                    fill="url(#g1)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+        {/* Rooms Grid */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-2xl font-bold tracking-tight">Rooms</h2>
+            <div className="text-sm text-muted-foreground">6 total areas</div>
           </div>
 
-          <div className="glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Quick Scenes
-                </div>
-                <div className="mt-1 font-display text-lg font-semibold">One-tap moods</div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {scenes.map((s) => {
-                const Icon = s.icon;
-                return (
-                  <button
-                    key={s.name}
-                    className="text-left p-4 rounded-xl bg-surface/60 border border-border hover:border-primary/40 hover:bg-primary/5 transition-all group"
-                  >
-                    <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary/30 to-primary/5 grid place-items-center mb-3 group-hover:glow-primary transition-all">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="text-sm font-medium">{s.name}</div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5">{s.desc}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Devices */}
-        <div className="glass rounded-2xl p-6">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 mb-5">
-            <div className="min-w-0">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                Active Devices
-              </div>
-              <div className="mt-1 font-display text-lg font-semibold">
-                12 connected · 8 active
-              </div>
-            </div>
-            <button className="shrink-0 text-xs text-primary hover:text-primary/80 inline-flex items-center gap-1">
-              View all <ArrowUpRight className="h-3 w-3" />
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {devices.map((d) => {
-              const Icon = d.icon;
-              return (
-                <div
-                  key={d.name}
-                  className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4 rounded-xl bg-surface/40 border border-border hover:border-primary/30 transition-all"
-                >
-                  <div
-                    className={`h-10 w-10 shrink-0 rounded-lg grid place-items-center ${
-                      d.on
-                        ? "bg-primary/15 text-primary"
-                        : "bg-muted/40 text-muted-foreground"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium truncate">{d.name}</div>
-                    <div className="text-[11px] text-muted-foreground truncate">
-                      {d.room} · {d.state}
-                    </div>
-                  </div>
-                  <label className="shrink-0 relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" defaultChecked={d.on} className="sr-only peer" />
-                    <div className="w-9 h-5 bg-muted/60 rounded-full peer peer-checked:bg-primary transition-colors relative">
-                      <div className="absolute top-0.5 left-0.5 h-4 w-4 bg-foreground rounded-full transition-transform peer-checked:translate-x-4" />
-                    </div>
-                  </label>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {initialRooms.map((room) => (
+              <RoomCard key={room.id} room={room} />
+            ))}
           </div>
         </div>
       </div>
