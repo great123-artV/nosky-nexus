@@ -7,11 +7,10 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SplashScreen } from "../components/SplashScreen";
 
 function NotFoundComponent() {
   return (
@@ -84,13 +83,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "Nosky Tech" },
       { name: "theme-color", content: "#0F172A" },
-      { property: "og:title", content: "Nosky HomeOS" },
+      { property: "og:title", content: "Nosky HomeOS — Smart Living. Seamlessly Connected." },
       {
         property: "og:description",
         content: "Smart Living. Seamlessly Connected. Powered by Nosky Tech.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Nosky HomeOS — Smart Living. Seamlessly Connected." },
+      { name: "description", content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management." },
+      { property: "og:description", content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management." },
+      { name: "twitter:description", content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -124,25 +129,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (sessionStorage.getItem("nosky-splash-shown")) {
-      setShowSplash(false);
-    }
-  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {showSplash && (
-        <SplashScreen
-          onDone={() => {
-            sessionStorage.setItem("nosky-splash-shown", "1");
-            setShowSplash(false);
-          }}
-        />
-      )}
       <Outlet />
     </QueryClientProvider>
   );
