@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RoomsRouteImport } from './routes/rooms'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as FloorPlanRouteImport } from './routes/floor-plan'
 import { Route as DevicesRouteImport } from './routes/devices'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
@@ -31,6 +32,11 @@ const RoomsRoute = RoomsRouteImport.update({
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FloorPlanRoute = FloorPlanRouteImport.update({
+  id: '/floor-plan',
+  path: '/floor-plan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DevicesRoute = DevicesRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/devices': typeof DevicesRoute
+  '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/rooms': typeof RoomsRouteWithChildren
   '/settings': typeof SettingsRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/devices': typeof DevicesRoute
+  '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/settings': typeof SettingsRoute
   '/rooms/$roomId': typeof RoomsRoomIdRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/devices': typeof DevicesRoute
+  '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/rooms': typeof RoomsRouteWithChildren
   '/settings': typeof SettingsRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/devices'
+    | '/floor-plan'
     | '/notifications'
     | '/rooms'
     | '/settings'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/devices'
+    | '/floor-plan'
     | '/notifications'
     | '/settings'
     | '/rooms/$roomId'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/devices'
+    | '/floor-plan'
     | '/notifications'
     | '/rooms'
     | '/settings'
@@ -125,6 +137,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   DevicesRoute: typeof DevicesRoute
+  FloorPlanRoute: typeof FloorPlanRoute
   NotificationsRoute: typeof NotificationsRoute
   RoomsRoute: typeof RoomsRouteWithChildren
   SettingsRoute: typeof SettingsRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/floor-plan': {
+      id: '/floor-plan'
+      path: '/floor-plan'
+      fullPath: '/floor-plan'
+      preLoaderRoute: typeof FloorPlanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/devices': {
@@ -207,6 +227,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   DevicesRoute: DevicesRoute,
+  FloorPlanRoute: FloorPlanRoute,
   NotificationsRoute: NotificationsRoute,
   RoomsRoute: RoomsRouteWithChildren,
   SettingsRoute: SettingsRoute,
