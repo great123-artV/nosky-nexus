@@ -4,8 +4,10 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setExiting(true), 2400);
-    const t2 = setTimeout(() => onDone(), 2900);
+    // Total duration ~3.2s for a premium, lingering feel
+    // Starts fading out at 2.5s, finishes at 3.2s
+    const t1 = setTimeout(() => setExiting(true), 2500);
+    const t2 = setTimeout(() => onDone(), 3200);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -14,144 +16,183 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background transition-opacity duration-500 ${
+      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-700 ease-in-out ${
         exiting ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       style={{
-        background:
-          "radial-gradient(ellipse at center, oklch(0.22 0.04 260) 0%, oklch(0.14 0.03 260) 70%, oklch(0.10 0.02 260) 100%)",
+        background: "oklch(0.10 0.02 260)", // Deepest black-blue
       }}
     >
-      {/* Ambient glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 45%, rgba(59,130,246,0.18) 0%, transparent 55%)",
-        }}
-      />
-
-      {/* House icon */}
-      <div className="relative">
+      {/* Dynamic Ambient Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute inset-0 blur-2xl opacity-70"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
           style={{
-            background:
-              "radial-gradient(circle, rgba(59,130,246,0.6) 0%, transparent 70%)",
+            background: "radial-gradient(circle, oklch(0.66 0.18 255 / 0.08) 0%, transparent 70%)",
+            animation: "pulseGlow 4s ease-in-out infinite",
           }}
         />
-        <svg
-          width="120"
-          height="120"
-          viewBox="0 0 120 120"
-          fill="none"
-          className="relative"
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(0,0,0,0)_0%,_rgba(0,0,0,0.4)_100%)]" />
+      </div>
+
+      {/* Main Logo Container */}
+      <div className="relative flex flex-col items-center">
+        {/* Animated House Logo */}
+        <div className="relative w-32 h-32 mb-8">
+          {/* Back Glow */}
+          <div
+            className="absolute inset-0 blur-3xl opacity-40 scale-150"
+            style={{
+              background: "radial-gradient(circle, oklch(0.66 0.18 255) 0%, transparent 70%)",
+              animation: "fadeBlur 2s ease-out forwards",
+            }}
+          />
+
+          <svg
+            viewBox="0 0 100 100"
+            className="w-full h-full relative z-10"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="oklch(0.75 0.12 255)" />
+                <stop offset="100%" stopColor="oklch(0.55 0.20 255)" />
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Architectural House Outline */}
+            <path
+              d="M50 15 L85 40 V85 H15 V40 L50 15Z"
+              stroke="url(#logoGrad)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="draw-path"
+              style={{
+                strokeDasharray: 300,
+                strokeDashoffset: 300,
+                filter: "url(#glow)",
+              }}
+            />
+
+            {/* Smart Core / Connectivity Node */}
+            <circle
+              cx="50"
+              cy="55"
+              r="4"
+              fill="url(#logoGrad)"
+              className="fade-in-node"
+              style={{ opacity: 0 }}
+            />
+
+            {/* Connectivity Rays */}
+            <g className="fade-in-rays" style={{ opacity: 0 }}>
+              <path d="M50 35 V45" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M35 55 H42" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M58 55 H65" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M50 65 V75" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+            </g>
+          </svg>
+        </div>
+
+        {/* Text Content */}
+        <div className="text-center space-y-3 px-6">
+          <div className="overflow-hidden">
+            <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-white animate-reveal-up">
+              Nosky <span className="text-primary">HomeOS</span>
+            </h1>
+          </div>
+          <p
+            className="text-lg md:text-xl text-white/50 font-light tracking-wide animate-fade-in"
+            style={{ animationDelay: "1.2s", animationFillMode: "both" }}
+          >
+            Smart Living. Seamlessly Connected.
+          </p>
+        </div>
+
+        {/* Progress Bar Container */}
+        <div
+          className="mt-12 w-64 h-[1.5px] bg-white/5 rounded-full overflow-hidden relative animate-fade-in"
+          style={{ animationDelay: "0.8s", animationFillMode: "both" }}
         >
-          <defs>
-            <linearGradient id="houseGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#60A5FA" />
-              <stop offset="100%" stopColor="#3B82F6" />
-            </linearGradient>
-          </defs>
-          {/* House outline */}
-          <path
-            d="M20 58 L60 22 L100 58 L100 98 L20 98 Z"
-            stroke="url(#houseGrad)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-            style={{
-              strokeDasharray: 360,
-              strokeDashoffset: 360,
-              animation: "drawPath 1.6s ease-out forwards",
-              filter: "drop-shadow(0 0 6px rgba(59,130,246,0.7))",
-            }}
+          <div
+            className="absolute top-0 left-0 h-full bg-primary shadow-[0_0_10px_oklch(0.66_0.18_255)] animate-progress"
+            style={{ width: "0%" }}
           />
-          {/* Door */}
-          <path
-            d="M50 98 L50 74 L70 74 L70 98"
-            stroke="url(#houseGrad)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-            style={{
-              strokeDasharray: 80,
-              strokeDashoffset: 80,
-              animation: "drawPath 0.8s ease-out 1.2s forwards",
-              filter: "drop-shadow(0 0 4px rgba(59,130,246,0.6))",
-            }}
-          />
-          {/* Signal dot */}
-          <circle
-            cx="60"
-            cy="50"
-            r="3"
-            fill="#22C55E"
-            style={{
-              opacity: 0,
-              animation: "pulseDot 1.5s ease-out 1.6s infinite",
-              filter: "drop-shadow(0 0 6px rgba(34,197,94,0.9))",
-            }}
-          />
-        </svg>
+        </div>
       </div>
 
-      {/* Logo & text */}
+      {/* Premium Footer */}
       <div
-        className="mt-8 text-center"
-        style={{ animation: "fadeUp 0.8s ease-out 1.2s both" }}
+        className="absolute bottom-12 animate-fade-in"
+        style={{ animationDelay: "1.6s", animationFillMode: "both" }}
       >
-        <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
-          Nosky <span className="text-primary">HomeOS</span>
-        </h1>
-        <p className="mt-2 text-sm md:text-base text-muted-foreground">
-          Smart Living. Seamlessly Connected.
-        </p>
-      </div>
-
-      {/* Progress bar */}
-      <div
-        className="mt-10 w-48 h-[2px] rounded-full overflow-hidden bg-white/5"
-        style={{ animation: "fadeUp 0.6s ease-out 1.4s both" }}
-      >
-        <div
-          className="h-full rounded-full"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, #3B82F6, #60A5FA, transparent)",
-            animation: "progress 1.4s ease-in-out 1.4s forwards",
-            width: "0%",
-          }}
-        />
-      </div>
-
-      {/* Footer */}
-      <div
-        className="absolute bottom-8 text-center"
-        style={{ animation: "fadeUp 0.6s ease-out 1.8s both" }}
-      >
-        <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground/70">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 font-medium">
           Powered by Nosky Tech
         </p>
       </div>
 
       <style>{`
+        .draw-path {
+          animation: drawPath 1.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        }
+
+        .fade-in-node {
+          animation: fadeIn 0.8s ease-out 1.2s forwards;
+        }
+
+        .fade-in-rays {
+          animation: fadeIn 1s ease-out 1.4s forwards;
+        }
+
+        .animate-reveal-up {
+          animation: revealUp 1s cubic-bezier(0.2, 1, 0.3, 1) 0.8s both;
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 1s ease-out forwards;
+        }
+
+        .animate-progress {
+          animation: progress 2.2s cubic-bezier(0.1, 0, 0.2, 1) 0.5s forwards;
+        }
+
         @keyframes drawPath {
           to { stroke-dashoffset: 0; }
         }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
+
+        @keyframes revealUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
         @keyframes progress {
-          0% { width: 0%; }
-          100% { width: 100%; }
+          0% { width: 0%; opacity: 0.5; }
+          10% { width: 10%; opacity: 1; }
+          100% { width: 100%; opacity: 1; }
         }
-        @keyframes pulseDot {
-          0%, 100% { opacity: 0.3; transform: scale(0.9); transform-origin: 60px 50px; }
-          50% { opacity: 1; transform: scale(1.2); transform-origin: 60px 50px; }
+
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        @keyframes fadeBlur {
+          from { opacity: 0; transform: scale(1); }
+          to { opacity: 0.4; transform: scale(1.5); }
         }
       `}</style>
     </div>
