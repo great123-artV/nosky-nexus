@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { Sofa, Bed, ChefHat, Bath, Trees, Tv, Lightbulb, Thermometer } from "lucide-react";
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/rooms")({
       { name: "description", content: "Manage every room in your home." },
     ],
   }),
-  component: Rooms,
+  component: RoomsLayout,
 });
 
 const rooms = [
@@ -21,7 +21,11 @@ const rooms = [
   { name: "Media Room", icon: Tv, devices: 7, temp: "21°", lights: 2, active: false },
 ];
 
-function Rooms() {
+function RoomsLayout() {
+  return <Outlet />;
+}
+
+export function RoomsList() {
   return (
     <AppShell title="Rooms" subtitle="6 rooms · 33 devices across your home">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

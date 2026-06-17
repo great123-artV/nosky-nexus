@@ -52,10 +52,7 @@ export function AppShell({
 
         <nav className="flex-1 p-3 space-y-1">
           {nav.map((item) => {
-            const active =
-              item.to === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.to);
+            const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
               <Link
@@ -103,9 +100,7 @@ export function AppShell({
                 <h1 className="font-display text-lg md:text-xl font-semibold truncate text-gradient">
                   {title}
                 </h1>
-                {subtitle && (
-                  <p className="text-xs text-muted-foreground truncate">{subtitle}</p>
-                )}
+                {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}
               </div>
             </div>
 

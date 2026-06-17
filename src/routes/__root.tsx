@@ -46,9 +46,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center glass rounded-2xl p-8">
         <h1 className="text-xl font-semibold tracking-tight">This page didn't load</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">Something went wrong on our end.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -92,11 +90,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Nosky HomeOS — Smart Living. Seamlessly Connected." },
-      { name: "description", content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management." },
-      { property: "og:description", content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management." },
-      { name: "twitter:description", content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png" },
+      {
+        name: "description",
+        content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management.",
+      },
+      {
+        property: "og:description",
+        content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management.",
+      },
+      {
+        name: "twitter:description",
+        content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -134,11 +149,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {showSplash ? (
-        <SplashScreen onDone={() => setShowSplash(false)} />
-      ) : (
-        <Outlet />
-      )}
+      {showSplash ? <SplashScreen onDone={() => setShowSplash(false)} /> : <Outlet />}
     </QueryClientProvider>
   );
 }

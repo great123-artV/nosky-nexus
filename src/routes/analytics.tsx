@@ -92,8 +92,20 @@ function Analytics() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={weekly}>
                   <CartesianGrid stroke="oklch(1 0 0 / 0.05)" vertical={false} />
-                  <XAxis dataKey="d" stroke="oklch(0.72 0.025 255)" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis stroke="oklch(0.72 0.025 255)" fontSize={11} tickLine={false} axisLine={false} width={30} />
+                  <XAxis
+                    dataKey="d"
+                    stroke="oklch(0.72 0.025 255)"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="oklch(0.72 0.025 255)"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    width={30}
+                  />
                   <Tooltip
                     contentStyle={{
                       background: "oklch(0.22 0.03 260 / 0.95)",
@@ -122,8 +134,20 @@ function Analytics() {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={temp}>
                   <CartesianGrid stroke="oklch(1 0 0 / 0.05)" vertical={false} />
-                  <XAxis dataKey="t" stroke="oklch(0.72 0.025 255)" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis stroke="oklch(0.72 0.025 255)" fontSize={11} tickLine={false} axisLine={false} width={30} />
+                  <XAxis
+                    dataKey="t"
+                    stroke="oklch(0.72 0.025 255)"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="oklch(0.72 0.025 255)"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    width={30}
+                  />
                   <Tooltip
                     contentStyle={{
                       background: "oklch(0.22 0.03 260 / 0.95)",
@@ -132,8 +156,20 @@ function Analytics() {
                       fontSize: "12px",
                     }}
                   />
-                  <Line type="monotone" dataKey="living" stroke="oklch(0.66 0.18 255)" strokeWidth={2.5} dot={false} />
-                  <Line type="monotone" dataKey="bedroom" stroke="oklch(0.78 0.16 75)" strokeWidth={2.5} dot={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="living"
+                    stroke="oklch(0.66 0.18 255)"
+                    strokeWidth={2.5}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="bedroom"
+                    stroke="oklch(0.78 0.16 75)"
+                    strokeWidth={2.5}
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>

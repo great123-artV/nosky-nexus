@@ -95,10 +95,30 @@ export function SplashScreen({ onDone }: { onDone: () => void }) {
 
             {/* Connectivity Rays */}
             <g className="fade-in-rays" style={{ opacity: 0 }}>
-              <path d="M50 35 V45" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M35 55 H42" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M58 55 H65" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M50 65 V75" stroke="url(#logoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+              <path
+                d="M50 35 V45"
+                stroke="url(#logoGrad)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M35 55 H42"
+                stroke="url(#logoGrad)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M58 55 H65"
+                stroke="url(#logoGrad)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M50 65 V75"
+                stroke="url(#logoGrad)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
             </g>
           </svg>
         </div>

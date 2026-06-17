@@ -24,8 +24,22 @@ export const Route = createFileRoute("/devices")({
 });
 
 const devices = [
-  { name: "Philips Hue Strip", room: "Living Room", type: "Light", on: true, icon: Lightbulb, sig: 98 },
-  { name: "Nest Thermostat", room: "Hallway", type: "Climate", on: true, icon: Thermometer, sig: 96 },
+  {
+    name: "Philips Hue Strip",
+    room: "Living Room",
+    type: "Light",
+    on: true,
+    icon: Lightbulb,
+    sig: 98,
+  },
+  {
+    name: "Nest Thermostat",
+    room: "Hallway",
+    type: "Climate",
+    on: true,
+    icon: Thermometer,
+    sig: 96,
+  },
   { name: "August Smart Lock", room: "Entrance", type: "Security", on: true, icon: Lock, sig: 92 },
   { name: "Arlo Pro 4", room: "Outdoor", type: "Camera", on: true, icon: Camera, sig: 88 },
   { name: "Sonos Beam", room: "Media Room", type: "Audio", on: false, icon: Music, sig: 85 },
@@ -77,9 +91,7 @@ function Devices() {
                 <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
                   <div
                     className={`h-11 w-11 shrink-0 rounded-xl grid place-items-center ${
-                      d.on
-                        ? "bg-primary/15 text-primary"
-                        : "bg-muted/40 text-muted-foreground"
+                      d.on ? "bg-primary/15 text-primary" : "bg-muted/40 text-muted-foreground"
                     }`}
                   >
                     <Icon className="h-5 w-5" />
