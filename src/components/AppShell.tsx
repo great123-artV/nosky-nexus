@@ -2,8 +2,10 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
   LayoutDashboard,
+  Layout,
   Home,
   Cpu,
+  Sparkles,
   BarChart3,
   Bell,
   Settings,
@@ -14,8 +16,10 @@ import {
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/floor-plan", label: "Floor Plan", icon: Layout },
   { to: "/rooms", label: "Rooms", icon: Home },
   { to: "/devices", label: "Devices", icon: Cpu },
+  { to: "/scenes", label: "Scenes", icon: Sparkles },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/notifications", label: "Notifications", icon: Bell },
   { to: "/settings", label: "Settings", icon: Settings },
