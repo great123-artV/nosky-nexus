@@ -124,9 +124,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem("nosky-splash-shown")) {
+      setShowSplash(false);
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
+      {showSplash && (
+        <SplashScreen
+          onDone={() => {
+            sessionStorage.setItem("nosky-splash-shown", "1");
+            setShowSplash(false);
+          }}
+        />
+      )}
       <Outlet />
     </QueryClientProvider>
   );
