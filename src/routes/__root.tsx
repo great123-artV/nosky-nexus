@@ -4,14 +4,18 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SplashScreen } from "@/components/SplashScreen";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 
 function NotFoundComponent() {
   return (
@@ -78,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Nosky HomeOS is a premium smart-home operating system by Nosky Tech — control rooms, devices, energy and automations in one elegant interface.",
+          "Nosky HomeOS is a premium smart-home operating system by Nosky Tech — control zones, devices, energy and automations in one elegant interface.",
       },
       { name: "author", content: "Nosky Tech" },
       { name: "theme-color", content: "#0F172A" },
@@ -90,18 +94,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Nosky HomeOS — Smart Living. Seamlessly Connected." },
-      {
-        name: "description",
-        content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management.",
-      },
-      {
-        property: "og:description",
-        content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management.",
-      },
-      {
-        name: "twitter:description",
-        content: "Nosky HomeOS Dashboard: A premium web app for seamless smart home management.",
-      },
       {
         property: "og:image",
         content:
@@ -143,13 +135,48 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const PUBLIC_PATHS = ["/auth", "/legal/privacy", "/legal/terms"];
+
+function AuthGate({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user && !isPublic) navigate({ to: "/auth", replace: true });
+  }, [user, loading, isPublic, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen grid place-items-center bg-background">
+        <div className="text-xs uppercase tracking-widest text-muted-foreground animate-pulse">
+          Connecting to Nosky HomeOS…
+        </div>
+      </div>
+    );
+  }
+  if (!user && !isPublic) return null;
+  return <>{children}</>;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [showSplash, setShowSplash] = useState(true);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {showSplash ? <SplashScreen onDone={() => setShowSplash(false)} /> : <Outlet />}
+      <AuthProvider>
+        {showSplash ? (
+          <SplashScreen onDone={() => setShowSplash(false)} />
+        ) : (
+          <AuthGate>
+            <Outlet />
+          </AuthGate>
+        )}
+        <Toaster theme="dark" position="top-right" richColors closeButton />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
