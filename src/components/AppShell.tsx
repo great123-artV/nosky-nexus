@@ -12,6 +12,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { CipherAssistant } from "./CipherAssistant";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -237,6 +238,8 @@ export function AppShell({
           <span>Smart Living. Seamlessly Connected.</span>
           <span>© 2026 Nosky Tech</span>
         </footer>
+
+        <CipherAssistant />
       </div>
 
       {searchOpen && (

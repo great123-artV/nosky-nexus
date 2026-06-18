@@ -6,7 +6,6 @@ import {
   Wind,
   Battery,
   Thermometer,
-  Zap,
   ChevronDown,
   LucideIcon,
 } from "lucide-react";
@@ -17,7 +16,7 @@ import {
   Collapsible,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
-import { mockZones } from "./mockData";
+import { useDeviceStore } from "@/hooks/useDeviceStore";
 
 interface DeviceCardProps {
   device: Device;
@@ -33,10 +32,10 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 export function DeviceCard({ device }: DeviceCardProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [powerState, setPowerState] = useState(device.powerState);
-  const isActive = powerState === "on";
+  const { togglePowerState, setPowerState, zones } = useDeviceStore();
+  const isActive = device.powerState === "on";
   const isOnline = device.status === "online";
-  const zoneName = mockZones.find(z => z.id === device.zoneId)?.name || "Unknown Zone";
+  const zoneName = zones.find(z => z.id === device.zoneId)?.name || "Unknown Zone";
 
   const Icon = ICON_MAP[device.type] || Lightbulb;
 
@@ -75,7 +74,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
                 </span>
                 <Switch
                   checked={isActive}
-                  onCheckedChange={(checked) => setPowerState(checked ? "on" : "off")}
+                  onCheckedChange={(checked) => setPowerState(device.id, checked ? "on" : "off")}
                   className="data-[state=checked]:bg-primary"
                 />
               </>
