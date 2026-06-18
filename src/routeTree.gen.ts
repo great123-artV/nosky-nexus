@@ -19,6 +19,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ZonesIndexRouteImport } from './routes/zones.index'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as ZonesZoneIdRouteImport } from './routes/zones.$zoneId'
 import { Route as SettingsTermsRouteImport } from './routes/settings.terms'
 import { Route as SettingsProfileRouteImport } from './routes/settings.profile'
@@ -77,6 +78,11 @@ const ZonesIndexRoute = ZonesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ZonesRoute,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
 } as any)
 const ZonesZoneIdRoute = ZonesZoneIdRouteImport.update({
   id: '/$zoneId',
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/terms': typeof SettingsTermsRoute
   '/zones/$zoneId': typeof ZonesZoneIdRoute
+  '/settings/': typeof SettingsIndexRoute
   '/zones/': typeof ZonesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -147,7 +154,6 @@ export interface FileRoutesByTo {
   '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/scenes': typeof ScenesRoute
-  '/settings': typeof SettingsRouteWithChildren
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/settings/about': typeof SettingsAboutRoute
@@ -156,6 +162,7 @@ export interface FileRoutesByTo {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/terms': typeof SettingsTermsRoute
   '/zones/$zoneId': typeof ZonesZoneIdRoute
+  '/settings': typeof SettingsIndexRoute
   '/zones': typeof ZonesIndexRoute
 }
 export interface FileRoutesById {
@@ -177,6 +184,7 @@ export interface FileRoutesById {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/terms': typeof SettingsTermsRoute
   '/zones/$zoneId': typeof ZonesZoneIdRoute
+  '/settings/': typeof SettingsIndexRoute
   '/zones/': typeof ZonesIndexRoute
 }
 export interface FileRouteTypes {
@@ -199,6 +207,7 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/terms'
     | '/zones/$zoneId'
+    | '/settings/'
     | '/zones/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,7 +218,6 @@ export interface FileRouteTypes {
     | '/floor-plan'
     | '/notifications'
     | '/scenes'
-    | '/settings'
     | '/legal/privacy'
     | '/legal/terms'
     | '/settings/about'
@@ -218,6 +226,7 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/terms'
     | '/zones/$zoneId'
+    | '/settings'
     | '/zones'
   id:
     | '__root__'
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/terms'
     | '/zones/$zoneId'
+    | '/settings/'
     | '/zones/'
   fileRoutesById: FileRoutesById
 }
@@ -327,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ZonesIndexRouteImport
       parentRoute: typeof ZonesRoute
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/zones/$zoneId': {
       id: '/zones/$zoneId'
       path: '/$zoneId'
@@ -392,6 +409,7 @@ interface SettingsRouteChildren {
   SettingsPrivacyRoute: typeof SettingsPrivacyRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SettingsTermsRoute: typeof SettingsTermsRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 const SettingsRouteChildren: SettingsRouteChildren = {
@@ -400,6 +418,7 @@ const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsPrivacyRoute: SettingsPrivacyRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SettingsTermsRoute: SettingsTermsRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 
 const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
