@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { useState, useMemo } from "react";
 import { Search, Filter, LayoutGrid, List } from "lucide-react";
-import { mockDevices } from "@/components/devices/mockData";
+import { mockDevices, mockZones } from "@/components/devices/mockData";
 import { DeviceSummary } from "@/components/devices/DeviceSummary";
 import { DeviceCard } from "@/components/devices/DeviceCard";
 import { DeviceType } from "@/components/devices/types";
@@ -32,9 +32,12 @@ function DevicesPage() {
 
   const filteredDevices = useMemo(() => {
     return mockDevices.filter((device) => {
+      const zone = mockZones.find(z => z.id === device.zoneId);
+      const zoneName = zone?.name || "";
+
       const matchesSearch =
         device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        device.room.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        zoneName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         device.type.toLowerCase().includes(searchQuery.toLowerCase());
 
       const category = categories.find(c => c.id === activeCategory);
@@ -44,9 +47,9 @@ function DevicesPage() {
     });
   }, [searchQuery, activeCategory]);
 
-  const activeCount = mockDevices.filter(d => d.active).length;
-  const onlineCount = mockDevices.filter(d => d.online).length;
-  const climateRunning = mockDevices.filter(d => d.type === "AC" && d.active).length;
+  const activeCount = mockDevices.filter(d => d.powerState === "on").length;
+  const onlineCount = mockDevices.filter(d => d.status === "online").length;
+  const climateRunning = mockDevices.filter(d => d.type === "AC" && d.powerState === "on").length;
 
   return (
     <AppShell
@@ -64,7 +67,7 @@ function DevicesPage() {
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, room, or type..."
+              placeholder="Search by name, zone, or type..."
               className="bg-transparent outline-none text-sm placeholder:text-muted-foreground/60 w-full text-white"
             />
           </div>

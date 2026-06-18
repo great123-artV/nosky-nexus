@@ -2,13 +2,27 @@ import { LucideIcon } from "lucide-react";
 
 export type DeviceType = "Light" | "Socket" | "AC" | "Fan" | "Inverter";
 
+export interface Zone {
+  id: string;
+  name: string;
+  description?: string;
+  icon: string;
+  floor: string;
+  devices: string[]; // Array of Device IDs
+  position?: {
+    x: number;
+    y: number;
+  };
+  createdAt: string;
+}
+
 export interface DeviceBase {
   id: string;
   name: string;
-  room: string;
+  zoneId: string;
   type: DeviceType;
-  online: boolean;
-  active: boolean;
+  status: "online" | "offline";
+  powerState: "on" | "off";
   lastActivity: string;
 }
 

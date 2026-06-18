@@ -6,9 +6,9 @@ interface DeviceSummaryProps {
 }
 
 export function DeviceSummary({ devices }: DeviceSummaryProps) {
-  const onlineCount = devices.filter((d) => d.online).length;
-  const activeCount = devices.filter((d) => d.active).length;
-  const climateCount = devices.filter((d) => d.type === "AC" && d.active).length;
+  const onlineCount = devices.filter((d) => d.status === "online").length;
+  const activeCount = devices.filter((d) => d.powerState === "on").length;
+  const climateCount = devices.filter((d) => d.type === "AC" && d.powerState === "on").length;
 
   // For mock, take the first inverter's health or a default
   const inverter = devices.find((d) => d.type === "Inverter") as any;
