@@ -7,6 +7,7 @@ import {
   FileText,
   AlertTriangle,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -26,6 +27,7 @@ const groups = [
     title: "Nosky HomeOS",
     items: [
       { to: "/settings/about", icon: Info, label: "About", desc: "Version, features, company" },
+      { to: "/settings/ai", icon: Sparkles, label: "AI Configuration", desc: "Gemini status & diagnostics" },
     ],
   },
   {

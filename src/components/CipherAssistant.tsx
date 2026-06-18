@@ -8,13 +8,14 @@ import {
   Volume2,
   Sparkles,
   Loader2,
-  Power
+  Power,
+  AlertTriangle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { useDeviceStore } from "@/hooks/useDeviceStore";
-import { processUserCommand, CipherIntent } from "@/lib/gemini.service";
+import { processUserCommand, CipherIntent, isGeminiConfigured } from "@/lib/gemini.service";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
@@ -41,6 +42,8 @@ export function CipherAssistant() {
   const { speak } = useSpeechSynthesis();
   const { devices, zones, setPowerState } = useDeviceStore();
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const configured = isGeminiConfigured();
 
   // Load history from localStorage
   useEffect(() => {
@@ -147,6 +150,7 @@ export function CipherAssistant() {
   };
 
   const handleMicClick = () => {
+    if (!configured) return;
     if (isListening) {
       stopListening();
       if (transcript) {
@@ -185,6 +189,19 @@ export function CipherAssistant() {
               <X className="h-4 w-4 text-muted-foreground" />
             </button>
           </div>
+
+          {/* Fallback Banner */}
+          {!configured && (
+            <div className="mx-4 mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-bold text-destructive">⚠ AI Services Unavailable</p>
+                <p className="text-[10px] text-destructive/80 leading-tight mt-0.5">
+                  Gemini is currently unavailable or not configured. Please configure Gemini AI to enable Cipher Assistant.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Chat Content */}
           <ScrollArea className="flex-1 p-4">
@@ -254,13 +271,16 @@ export function CipherAssistant() {
           {/* Input Area */}
           <div className="p-4 bg-white/5 border-t border-white/5">
             <form onSubmit={handleFormSubmit} className="flex items-center gap-2">
-              <div className="flex-1 glass rounded-xl px-3 py-1.5 flex items-center gap-2 focus-within:border-primary/40 transition-colors">
+              <div className={cn(
+                "flex-1 glass rounded-xl px-3 py-1.5 flex items-center gap-2 transition-colors",
+                configured ? "focus-within:border-primary/40" : "opacity-50 cursor-not-allowed"
+              )}>
                 <input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask Cipher..."
-                  className="bg-transparent outline-none text-sm w-full py-1 text-white placeholder:text-muted-foreground/50"
-                  disabled={isLoading}
+                  placeholder={configured ? "Ask Cipher..." : "AI disabled..."}
+                  className="bg-transparent outline-none text-sm w-full py-1 text-white placeholder:text-muted-foreground/50 disabled:cursor-not-allowed"
+                  disabled={isLoading || !configured}
                 />
                 {inputValue.trim() ? (
                   <button type="submit" className="text-primary hover:scale-110 transition-transform">
@@ -274,12 +294,14 @@ export function CipherAssistant() {
               <button
                 type="button"
                 onClick={handleMicClick}
-                disabled={!browserSupportsSpeechRecognition || isLoading}
+                disabled={!browserSupportsSpeechRecognition || isLoading || !configured}
                 className={cn(
                   "h-10 w-10 rounded-xl flex items-center justify-center transition-all",
-                  isListening
-                    ? "bg-destructive text-destructive-foreground animate-pulse"
-                    : "bg-primary text-primary-foreground glow-primary hover:scale-105"
+                  !configured
+                    ? "bg-white/5 text-muted-foreground cursor-not-allowed"
+                    : isListening
+                      ? "bg-destructive text-destructive-foreground animate-pulse"
+                      : "bg-primary text-primary-foreground glow-primary hover:scale-105"
                 )}
               >
                 {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
