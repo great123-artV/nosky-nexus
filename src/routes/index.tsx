@@ -9,9 +9,9 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { mockZones, mockDevices } from "@/components/devices/mockData";
 import { Zone } from "@/components/devices/types";
 import { useAuth } from "@/hooks/useAuth";
+import { useDeviceStore } from "@/hooks/useDeviceStore";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,7 +35,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 function ZoneCard({ zone }: { zone: Zone }) {
   const Icon = ICON_MAP[zone.icon] || Lightbulb;
-  const zoneDevices = mockDevices.filter(d => d.zoneId === zone.id);
+  const { devices } = useDeviceStore();
+  const zoneDevices = devices.filter(d => d.zoneId === zone.id);
   const onlineCount = zoneDevices.filter(d => d.status === "online").length;
 
   return (
@@ -69,6 +70,7 @@ function ZoneCard({ zone }: { zone: Zone }) {
 
 function Dashboard() {
   const { profile } = useAuth();
+  const { zones } = useDeviceStore();
   const firstName = profile?.full_name ? profile.full_name.split(' ')[0] : null;
 
   return (
@@ -95,11 +97,11 @@ function Dashboard() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-2xl font-bold tracking-tight">Home Zones</h2>
-            <div className="text-sm text-muted-foreground">{mockZones.length} Rooms</div>
+            <div className="text-sm text-muted-foreground">{zones.length} Rooms</div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {mockZones.map((zone) => (
+            {zones.map((zone) => (
               <ZoneCard key={zone.id} zone={zone} />
             ))}
           </div>

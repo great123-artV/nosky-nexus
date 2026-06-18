@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { ArrowLeft, Settings, Power, Cpu } from "lucide-react";
-import { mockZones, mockDevices } from "@/components/devices/mockData";
 import { DeviceCard } from "@/components/devices/DeviceCard";
+import { useDeviceStore } from "@/hooks/useDeviceStore";
 
 export const Route = createFileRoute("/zones/$zoneId")({
   component: ZoneDetail,
@@ -10,8 +10,9 @@ export const Route = createFileRoute("/zones/$zoneId")({
 
 function ZoneDetail() {
   const { zoneId } = Route.useParams();
-  const zone = mockZones.find(z => z.id === zoneId);
-  const zoneDevices = mockDevices.filter(d => d.zoneId === zoneId);
+  const { zones, devices } = useDeviceStore();
+  const zone = zones.find(z => z.id === zoneId);
+  const zoneDevices = devices.filter(d => d.zoneId === zoneId);
 
   if (!zone) {
     return (
