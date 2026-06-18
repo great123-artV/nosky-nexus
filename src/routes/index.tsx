@@ -131,14 +131,6 @@ function Dashboard() {
           </div>
         </div>
 
-          <div className="flex items-center gap-3 px-4 py-2 bg-success/10 border border-success/20 rounded-full animate-in fade-in slide-in-from-right-4 duration-700">
-            <span className="h-2.5 w-2.5 rounded-full bg-success pulse-ring" />
-            <span className="text-sm font-medium text-success tracking-wide">
-              All Systems Operational
-            </span>
-          </div>
-        </div>
-
         {/* Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {dynamicOverviewCards.map((card, idx) => {
@@ -190,3 +182,19 @@ function Dashboard() {
     </AppShell>
   );
 }
+
+function Greeting() {
+  const { profile } = useAuth();
+  const hour = new Date().getHours();
+  const timeOfDay = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
+  const firstName = profile?.full_name?.trim().split(" ")[0];
+  return (
+    <div className="space-y-2 animate-in fade-in slide-in-from-left-4 duration-700">
+      <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tight text-gradient">
+        {timeOfDay}{firstName ? `, ${firstName}` : ""}
+      </h2>
+      <p className="text-2xl md:text-3xl text-muted-foreground font-light">Welcome Home</p>
+    </div>
+  );
+}
+
