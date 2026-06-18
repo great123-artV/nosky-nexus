@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ScenesRouteImport } from './routes/scenes'
 import { Route as RoomsRouteImport } from './routes/rooms'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as FloorPlanRouteImport } from './routes/floor-plan'
@@ -22,6 +23,11 @@ import { Route as RoomsRoomIdRouteImport } from './routes/rooms.$roomId'
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScenesRoute = ScenesRouteImport.update({
+  id: '/scenes',
+  path: '/scenes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoomsRoute = RoomsRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/rooms': typeof RoomsRouteWithChildren
+  '/scenes': typeof ScenesRoute
   '/settings': typeof SettingsRoute
   '/rooms/$roomId': typeof RoomsRoomIdRoute
   '/rooms/': typeof RoomsIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/devices': typeof DevicesRoute
   '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
+  '/scenes': typeof ScenesRoute
   '/settings': typeof SettingsRoute
   '/rooms/$roomId': typeof RoomsRoomIdRoute
   '/rooms': typeof RoomsIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/rooms': typeof RoomsRouteWithChildren
+  '/scenes': typeof ScenesRoute
   '/settings': typeof SettingsRoute
   '/rooms/$roomId': typeof RoomsRoomIdRoute
   '/rooms/': typeof RoomsIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/floor-plan'
     | '/notifications'
     | '/rooms'
+    | '/scenes'
     | '/settings'
     | '/rooms/$roomId'
     | '/rooms/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/devices'
     | '/floor-plan'
     | '/notifications'
+    | '/scenes'
     | '/settings'
     | '/rooms/$roomId'
     | '/rooms'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/floor-plan'
     | '/notifications'
     | '/rooms'
+    | '/scenes'
     | '/settings'
     | '/rooms/$roomId'
     | '/rooms/'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   FloorPlanRoute: typeof FloorPlanRoute
   NotificationsRoute: typeof NotificationsRoute
   RoomsRoute: typeof RoomsRouteWithChildren
+  ScenesRoute: typeof ScenesRoute
   SettingsRoute: typeof SettingsRoute
 }
 
@@ -150,6 +163,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scenes': {
+      id: '/scenes'
+      path: '/scenes'
+      fullPath: '/scenes'
+      preLoaderRoute: typeof ScenesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rooms': {
@@ -230,6 +250,7 @@ const rootRouteChildren: RootRouteChildren = {
   FloorPlanRoute: FloorPlanRoute,
   NotificationsRoute: NotificationsRoute,
   RoomsRoute: RoomsRouteWithChildren,
+  ScenesRoute: ScenesRoute,
   SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
