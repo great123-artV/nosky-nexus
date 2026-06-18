@@ -15,10 +15,19 @@ import { Route as ScenesRouteImport } from './routes/scenes'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as FloorPlanRouteImport } from './routes/floor-plan'
 import { Route as DevicesRouteImport } from './routes/devices'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ZonesIndexRouteImport } from './routes/zones.index'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as ZonesZoneIdRouteImport } from './routes/zones.$zoneId'
+import { Route as SettingsTermsRouteImport } from './routes/settings.terms'
+import { Route as SettingsProfileRouteImport } from './routes/settings.profile'
+import { Route as SettingsPrivacyRouteImport } from './routes/settings.privacy'
+import { Route as SettingsDisclaimerRouteImport } from './routes/settings.disclaimer'
+import { Route as SettingsAboutRouteImport } from './routes/settings.about'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 
 const ZonesRoute = ZonesRouteImport.update({
   id: '/zones',
@@ -50,6 +59,11 @@ const DevicesRoute = DevicesRouteImport.update({
   path: '/devices',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -65,46 +79,112 @@ const ZonesIndexRoute = ZonesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ZonesRoute,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const ZonesZoneIdRoute = ZonesZoneIdRouteImport.update({
   id: '/$zoneId',
   path: '/$zoneId',
   getParentRoute: () => ZonesRoute,
 } as any)
+const SettingsTermsRoute = SettingsTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsProfileRoute = SettingsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsPrivacyRoute = SettingsPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsDisclaimerRoute = SettingsDisclaimerRouteImport.update({
+  id: '/disclaimer',
+  path: '/disclaimer',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsAboutRoute = SettingsAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
   '/devices': typeof DevicesRoute
   '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/scenes': typeof ScenesRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/zones': typeof ZonesRouteWithChildren
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
+  '/settings/about': typeof SettingsAboutRoute
+  '/settings/disclaimer': typeof SettingsDisclaimerRoute
+  '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/terms': typeof SettingsTermsRoute
   '/zones/$zoneId': typeof ZonesZoneIdRoute
+  '/settings/': typeof SettingsIndexRoute
   '/zones/': typeof ZonesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
   '/devices': typeof DevicesRoute
   '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/scenes': typeof ScenesRoute
-  '/settings': typeof SettingsRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
+  '/settings/about': typeof SettingsAboutRoute
+  '/settings/disclaimer': typeof SettingsDisclaimerRoute
+  '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/terms': typeof SettingsTermsRoute
   '/zones/$zoneId': typeof ZonesZoneIdRoute
+  '/settings': typeof SettingsIndexRoute
   '/zones': typeof ZonesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
   '/devices': typeof DevicesRoute
   '/floor-plan': typeof FloorPlanRoute
   '/notifications': typeof NotificationsRoute
   '/scenes': typeof ScenesRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/zones': typeof ZonesRouteWithChildren
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
+  '/settings/about': typeof SettingsAboutRoute
+  '/settings/disclaimer': typeof SettingsDisclaimerRoute
+  '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/terms': typeof SettingsTermsRoute
   '/zones/$zoneId': typeof ZonesZoneIdRoute
+  '/settings/': typeof SettingsIndexRoute
   '/zones/': typeof ZonesIndexRoute
 }
 export interface FileRouteTypes {
@@ -112,48 +192,77 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analytics'
+    | '/auth'
     | '/devices'
     | '/floor-plan'
     | '/notifications'
     | '/scenes'
     | '/settings'
     | '/zones'
+    | '/legal/privacy'
+    | '/legal/terms'
+    | '/settings/about'
+    | '/settings/disclaimer'
+    | '/settings/privacy'
+    | '/settings/profile'
+    | '/settings/terms'
     | '/zones/$zoneId'
+    | '/settings/'
     | '/zones/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/analytics'
+    | '/auth'
     | '/devices'
     | '/floor-plan'
     | '/notifications'
     | '/scenes'
-    | '/settings'
+    | '/legal/privacy'
+    | '/legal/terms'
+    | '/settings/about'
+    | '/settings/disclaimer'
+    | '/settings/privacy'
+    | '/settings/profile'
+    | '/settings/terms'
     | '/zones/$zoneId'
+    | '/settings'
     | '/zones'
   id:
     | '__root__'
     | '/'
     | '/analytics'
+    | '/auth'
     | '/devices'
     | '/floor-plan'
     | '/notifications'
     | '/scenes'
     | '/settings'
     | '/zones'
+    | '/legal/privacy'
+    | '/legal/terms'
+    | '/settings/about'
+    | '/settings/disclaimer'
+    | '/settings/privacy'
+    | '/settings/profile'
+    | '/settings/terms'
     | '/zones/$zoneId'
+    | '/settings/'
     | '/zones/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
+  AuthRoute: typeof AuthRoute
   DevicesRoute: typeof DevicesRoute
   FloorPlanRoute: typeof FloorPlanRoute
   NotificationsRoute: typeof NotificationsRoute
   ScenesRoute: typeof ScenesRoute
-  SettingsRoute: typeof SettingsRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   ZonesRoute: typeof ZonesRouteWithChildren
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalTermsRoute: typeof LegalTermsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -200,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DevicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/analytics': {
       id: '/analytics'
       path: '/analytics'
@@ -221,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ZonesIndexRouteImport
       parentRoute: typeof ZonesRoute
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/zones/$zoneId': {
       id: '/zones/$zoneId'
       path: '/$zoneId'
@@ -228,8 +351,79 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ZonesZoneIdRouteImport
       parentRoute: typeof ZonesRoute
     }
+    '/settings/terms': {
+      id: '/settings/terms'
+      path: '/terms'
+      fullPath: '/settings/terms'
+      preLoaderRoute: typeof SettingsTermsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/privacy': {
+      id: '/settings/privacy'
+      path: '/privacy'
+      fullPath: '/settings/privacy'
+      preLoaderRoute: typeof SettingsPrivacyRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/disclaimer': {
+      id: '/settings/disclaimer'
+      path: '/disclaimer'
+      fullPath: '/settings/disclaimer'
+      preLoaderRoute: typeof SettingsDisclaimerRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/about': {
+      id: '/settings/about'
+      path: '/about'
+      fullPath: '/settings/about'
+      preLoaderRoute: typeof SettingsAboutRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface SettingsRouteChildren {
+  SettingsAboutRoute: typeof SettingsAboutRoute
+  SettingsDisclaimerRoute: typeof SettingsDisclaimerRoute
+  SettingsPrivacyRoute: typeof SettingsPrivacyRoute
+  SettingsProfileRoute: typeof SettingsProfileRoute
+  SettingsTermsRoute: typeof SettingsTermsRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsAboutRoute: SettingsAboutRoute,
+  SettingsDisclaimerRoute: SettingsDisclaimerRoute,
+  SettingsPrivacyRoute: SettingsPrivacyRoute,
+  SettingsProfileRoute: SettingsProfileRoute,
+  SettingsTermsRoute: SettingsTermsRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
 
 interface ZonesRouteChildren {
   ZonesZoneIdRoute: typeof ZonesZoneIdRoute
@@ -246,23 +440,16 @@ const ZonesRouteWithChildren = ZonesRoute._addFileChildren(ZonesRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
+  AuthRoute: AuthRoute,
   DevicesRoute: DevicesRoute,
   FloorPlanRoute: FloorPlanRoute,
   NotificationsRoute: NotificationsRoute,
   ScenesRoute: ScenesRoute,
-  SettingsRoute: SettingsRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   ZonesRoute: ZonesRouteWithChildren,
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalTermsRoute: LegalTermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

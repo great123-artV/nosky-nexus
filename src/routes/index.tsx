@@ -17,6 +17,7 @@ import { AppShell } from "@/components/AppShell";
 import { useState } from "react";
 import { mockZones, mockDevices } from "@/components/devices/mockData";
 import { Zone } from "@/components/devices/types";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -120,12 +121,7 @@ function Dashboard() {
       <div className="max-w-[1600px] mx-auto space-y-12">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2 animate-in fade-in slide-in-from-left-4 duration-700">
-            <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tight text-gradient">
-              Good Evening
-            </h2>
-            <p className="text-2xl md:text-3xl text-muted-foreground font-light">Welcome Home</p>
-          </div>
+          <Greeting />
 
           <div className="flex items-center gap-3 px-4 py-2 bg-success/10 border border-success/20 rounded-full animate-in fade-in slide-in-from-right-4 duration-700">
             <span className="h-2.5 w-2.5 rounded-full bg-success pulse-ring" />
@@ -186,3 +182,19 @@ function Dashboard() {
     </AppShell>
   );
 }
+
+function Greeting() {
+  const { profile } = useAuth();
+  const hour = new Date().getHours();
+  const timeOfDay = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
+  const firstName = profile?.full_name?.trim().split(" ")[0];
+  return (
+    <div className="space-y-2 animate-in fade-in slide-in-from-left-4 duration-700">
+      <h2 className="font-display text-4xl md:text-6xl font-bold tracking-tight text-gradient">
+        {timeOfDay}{firstName ? `, ${firstName}` : ""}
+      </h2>
+      <p className="text-2xl md:text-3xl text-muted-foreground font-light">Welcome Home</p>
+    </div>
+  );
+}
+
