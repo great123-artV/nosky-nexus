@@ -8,7 +8,6 @@ import {
   Sparkles,
   Plus,
   ChevronRight,
-  ShieldCheck,
   Clock
 } from "lucide-react";
 import { useState } from "react";
@@ -28,6 +27,7 @@ interface Scene {
   color: string;
   glowColor: string;
   actions: string[];
+  targetZones: string[];
   devicesAffected: number;
 }
 
@@ -40,6 +40,7 @@ const SCENES: Scene[] = [
     color: "text-blue-400",
     glowColor: "shadow-blue-500/20",
     devicesAffected: 12,
+    targetZones: ["zone-001", "zone-002", "zone-003"],
     actions: ["Enable commonly used sockets", "Normal lighting", "Comfortable environment"],
   },
   {
@@ -50,6 +51,7 @@ const SCENES: Scene[] = [
     color: "text-indigo-400",
     glowColor: "shadow-indigo-500/20",
     devicesAffected: 7,
+    targetZones: ["zone-001", "zone-004"],
     actions: ["Turn off parlor devices", "Dim room lighting", "Reduce unnecessary power usage"],
   },
   {
@@ -60,6 +62,7 @@ const SCENES: Scene[] = [
     color: "text-slate-400",
     glowColor: "shadow-slate-500/20",
     devicesAffected: 18,
+    targetZones: ["zone-001", "zone-002", "zone-003", "zone-004"],
     actions: ["Turn off lights & fans", "Disable AC units", "Security-critical devices active"],
   },
   {
@@ -70,6 +73,7 @@ const SCENES: Scene[] = [
     color: "text-emerald-400",
     glowColor: "shadow-emerald-500/20",
     devicesAffected: 9,
+    targetZones: ["zone-001", "zone-004"],
     actions: ["Disable unused sockets", "Reduce AC usage", "Optimize inverter runtime"],
   },
 ];
@@ -85,7 +89,7 @@ function ScenesPage() {
     setActiveSceneId(scene.id);
     setLastActivated(new Date());
     toast.success(`${scene.name} Activated`, {
-      description: `${scene.devicesAffected} devices adjusted successfully`,
+      description: `${scene.devicesAffected} devices adjusted across ${scene.targetZones.length} zones`,
     });
   };
 
@@ -191,7 +195,7 @@ function ScenesPage() {
 
                   <div className="pt-4 border-t border-border/50 space-y-3">
                     <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
-                      Actions for {scene.devicesAffected} Devices
+                      Actions for {scene.devicesAffected} Devices in {scene.targetZones.length} Zones
                     </div>
                     <ul className="space-y-2">
                       {scene.actions.map((action, i) => (

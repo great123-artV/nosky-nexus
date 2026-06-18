@@ -8,7 +8,6 @@ import {
   Thermometer,
   ChevronDown,
   Zap,
-  Info,
   Clock,
   Settings2,
   Activity
@@ -20,16 +19,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
   AreaChart,
   Area,
   ResponsiveContainer,
-  YAxis,
-  XAxis,
-  Tooltip
 } from "recharts";
+import { mockZones } from "./mockData";
 
 interface DeviceCardProps {
   device: Device;
@@ -37,7 +33,10 @@ interface DeviceCardProps {
 
 export function DeviceCard({ device }: DeviceCardProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isActive, setIsActive] = useState(device.active);
+  const [powerState, setPowerState] = useState(device.powerState);
+  const isActive = powerState === "on";
+  const isOnline = device.status === "online";
+  const zoneName = mockZones.find(z => z.id === device.zoneId)?.name || "Unknown Zone";
 
   const Icon = {
     Light: Lightbulb,
@@ -64,7 +63,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             </div>
             <div className="min-w-0">
               <h3 className="font-semibold text-white truncate">{device.name}</h3>
-              <p className="text-xs text-muted-foreground truncate">{device.room}</p>
+              <p className="text-xs text-muted-foreground truncate">{zoneName}</p>
             </div>
           </div>
 
@@ -72,10 +71,10 @@ export function DeviceCard({ device }: DeviceCardProps) {
             <div className="hidden sm:flex flex-col items-end gap-1 mr-2">
               <span className={cn(
                 "flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full",
-                device.online ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+                isOnline ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
               )}>
-                <span className={cn("h-1.5 w-1.5 rounded-full", device.online ? "bg-success" : "bg-destructive")} />
-                {device.online ? "ONLINE" : "OFFLINE"}
+                <span className={cn("h-1.5 w-1.5 rounded-full", isOnline ? "bg-success" : "bg-destructive")} />
+                {device.status.toUpperCase()}
               </span>
               {isActive && (
                 <span className="flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
@@ -85,7 +84,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             </div>
             <Switch
               checked={isActive}
-              onCheckedChange={setIsActive}
+              onCheckedChange={(checked) => setPowerState(checked ? "on" : "off")}
               className="data-[state=checked]:bg-primary"
             />
           </div>

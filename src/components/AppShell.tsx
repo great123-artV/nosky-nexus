@@ -17,7 +17,7 @@ import {
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/floor-plan", label: "Floor Plan", icon: Layout },
-  { to: "/rooms", label: "Rooms", icon: Home },
+  { to: "/zones", label: "Zones", icon: Home },
   { to: "/devices", label: "Devices", icon: Cpu },
   { to: "/scenes", label: "Scenes", icon: Sparkles },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
@@ -112,7 +112,7 @@ export function AppShell({
               <div className="hidden lg:flex items-center gap-2 glass rounded-lg px-3 py-1.5 w-64">
                 <Search className="h-3.5 w-3.5 text-muted-foreground" />
                 <input
-                  placeholder="Search devices, rooms…"
+                  placeholder="Search devices, zones…"
                   className="bg-transparent outline-none text-sm placeholder:text-muted-foreground/70 w-full"
                 />
                 <kbd className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
