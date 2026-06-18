@@ -20,6 +20,7 @@ import { Route as SettingsTermsRouteImport } from './routes/settings.terms'
 import { Route as SettingsProfileRouteImport } from './routes/settings.profile'
 import { Route as SettingsPrivacyRouteImport } from './routes/settings.privacy'
 import { Route as SettingsDisclaimerRouteImport } from './routes/settings.disclaimer'
+import { Route as SettingsAiRouteImport } from './routes/settings.ai'
 import { Route as SettingsAboutRouteImport } from './routes/settings.about'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
@@ -79,6 +80,11 @@ const SettingsDisclaimerRoute = SettingsDisclaimerRouteImport.update({
   path: '/disclaimer',
   getParentRoute: () => SettingsRoute,
 } as any)
+const SettingsAiRoute = SettingsAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const SettingsAboutRoute = SettingsAboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/settings/about': typeof SettingsAboutRoute
+  '/settings/ai': typeof SettingsAiRoute
   '/settings/disclaimer': typeof SettingsDisclaimerRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/settings/about': typeof SettingsAboutRoute
+  '/settings/ai': typeof SettingsAiRoute
   '/settings/disclaimer': typeof SettingsDisclaimerRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/settings/about': typeof SettingsAboutRoute
+  '/settings/ai': typeof SettingsAiRoute
   '/settings/disclaimer': typeof SettingsDisclaimerRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/terms'
     | '/settings/about'
+    | '/settings/ai'
     | '/settings/disclaimer'
     | '/settings/privacy'
     | '/settings/profile'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/terms'
     | '/settings/about'
+    | '/settings/ai'
     | '/settings/disclaimer'
     | '/settings/privacy'
     | '/settings/profile'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/terms'
     | '/settings/about'
+    | '/settings/ai'
     | '/settings/disclaimer'
     | '/settings/privacy'
     | '/settings/profile'
@@ -279,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsDisclaimerRouteImport
       parentRoute: typeof SettingsRoute
     }
+    '/settings/ai': {
+      id: '/settings/ai'
+      path: '/ai'
+      fullPath: '/settings/ai'
+      preLoaderRoute: typeof SettingsAiRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/settings/about': {
       id: '/settings/about'
       path: '/about'
@@ -305,6 +324,7 @@ declare module '@tanstack/react-router' {
 
 interface SettingsRouteChildren {
   SettingsAboutRoute: typeof SettingsAboutRoute
+  SettingsAiRoute: typeof SettingsAiRoute
   SettingsDisclaimerRoute: typeof SettingsDisclaimerRoute
   SettingsPrivacyRoute: typeof SettingsPrivacyRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
@@ -314,6 +334,7 @@ interface SettingsRouteChildren {
 
 const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsAboutRoute: SettingsAboutRoute,
+  SettingsAiRoute: SettingsAiRoute,
   SettingsDisclaimerRoute: SettingsDisclaimerRoute,
   SettingsPrivacyRoute: SettingsPrivacyRoute,
   SettingsProfileRoute: SettingsProfileRoute,

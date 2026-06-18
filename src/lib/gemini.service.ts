@@ -1,7 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(API_KEY);
+const getApiKey = () => import.meta.env.VITE_GEMINI_API_KEY;
+
+let genAI: GoogleGenerativeAI | null = null;
+
+const getGenAI = () => {
+  const apiKey = getApiKey();
+  if (!apiKey) return null;
+  if (!genAI) {
+    genAI = new GoogleGenerativeAI(apiKey);
+  }
+  return genAI;
+};
 
 export interface CipherIntent {
   intent: "device_control" | "coming_soon" | "unknown" | "ambiguous";
@@ -57,15 +67,17 @@ SECURITY:
 `;
 
 export async function processUserCommand(command: string): Promise<CipherIntent> {
-  if (!API_KEY) {
+  const genAIInstance = getGenAI();
+
+  if (!genAIInstance) {
     return {
       intent: "unknown",
-      response: "Gemini API key is not configured. Please check your environment variables.",
+      response: "Gemini AI is not configured. Expected environment variable: VITE_GEMINI_API_KEY. Please add the variable in the project environment settings and redeploy the application.",
     };
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAIInstance.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: `${SYSTEM_PROMPT}\n\nUser: ${command}` }] }],
@@ -80,11 +92,45 @@ export async function processUserCommand(command: string): Promise<CipherIntent>
 
     const responseText = result.response.text();
     return JSON.parse(responseText) as CipherIntent;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error calling Gemini API:", error);
+
+    let errorMessage = "I'm sorry, I encountered an error while processing your request.";
+
+    if (error?.message?.includes("API_KEY_INVALID")) {
+      errorMessage = "The Gemini API key provided is invalid. Please check your configuration.";
+    } else if (error?.message?.includes("quota")) {
+      errorMessage = "The AI service is currently at its limit. Please try again later.";
+    }
+
     return {
       intent: "unknown",
-      response: "I'm sorry, I encountered an error while processing your request.",
+      response: errorMessage,
     };
   }
+}
+
+export async function testGeminiConnection(): Promise<{ success: boolean; message: string }> {
+  const genAIInstance = getGenAI();
+  if (!genAIInstance) {
+    return { success: false, message: "VITE_GEMINI_API_KEY is missing." };
+  }
+
+  try {
+    const model = genAIInstance.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent("Respond with: Connection Successful");
+    const text = result.response.text();
+
+    if (text.includes("Connection Successful")) {
+      return { success: true, message: "Gemini Connected" };
+    }
+    return { success: false, message: "Unexpected response from Gemini." };
+  } catch (error: any) {
+    console.error("Gemini Connection Test Failed:", error);
+    return { success: false, message: error.message || "Connection Failed" };
+  }
+}
+
+export function isGeminiConfigured(): boolean {
+  return !!getApiKey();
 }
