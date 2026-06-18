@@ -29,13 +29,16 @@ export function ZonesList() {
   const totalDevices = mockDevices.length;
 
   return (
-    <AppShell title="Zones" subtitle={`${mockZones.length} zones · ${totalDevices} devices across your home`}>
+    <AppShell
+      title="Zones"
+      subtitle={`${mockZones.length} zones · ${totalDevices} devices across your home`}
+    >
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {mockZones.map((z) => {
           const Icon = ICON_MAP[z.icon] || Lightbulb;
-          const zoneDevices = mockDevices.filter(d => d.zoneId === z.id);
-          const activeDevices = zoneDevices.filter(d => d.powerState === "on").length;
-          const onlineDevices = zoneDevices.filter(d => d.status === "online").length;
+          const zoneDevices = mockDevices.filter((d) => d.zoneId === z.id);
+          const activeDevices = zoneDevices.filter((d) => d.powerState === "on").length;
+          const onlineDevices = zoneDevices.filter((d) => d.status === "online").length;
 
           return (
             <Link
@@ -52,7 +55,9 @@ export function ZonesList() {
                   </div>
                   <div className="min-w-0">
                     <div className="font-display font-semibold truncate text-lg">{z.name}</div>
-                    <div className="text-xs text-muted-foreground">{zoneDevices.length} devices</div>
+                    <div className="text-xs text-muted-foreground">
+                      {zoneDevices.length} devices
+                    </div>
                   </div>
                   <span
                     className={`shrink-0 text-[10px] uppercase tracking-wider px-2 py-1 rounded-full ${
@@ -61,7 +66,9 @@ export function ZonesList() {
                         : "bg-muted/40 text-muted-foreground border border-border"
                     }`}
                   >
-                    {onlineDevices === zoneDevices.length ? "All Online" : `${onlineDevices}/${zoneDevices.length} Connected`}
+                    {onlineDevices === zoneDevices.length
+                      ? "All Online"
+                      : `${onlineDevices}/${zoneDevices.length} Connected`}
                   </span>
                 </div>
 

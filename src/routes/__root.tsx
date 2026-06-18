@@ -86,6 +86,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "Nosky Tech" },
       { name: "theme-color", content: "#0F172A" },
+      { rel: "manifest", href: "/manifest.json" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "HomeOS" },
+      { rel: "apple-touch-icon", href: "/icons/icon.svg" },
       { property: "og:title", content: "Nosky HomeOS — Smart Living. Seamlessly Connected." },
       {
         property: "og:description",
@@ -164,6 +169,16 @@ function AuthGate({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch((err) => {
+          console.error("SW registration failed:", err);
+        });
+      });
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

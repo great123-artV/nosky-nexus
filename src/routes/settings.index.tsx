@@ -27,15 +27,35 @@ const groups = [
     title: "Nosky HomeOS",
     items: [
       { to: "/settings/about", icon: Info, label: "About", desc: "Version, features, company" },
-      { to: "/settings/ai", icon: Sparkles, label: "AI Configuration", desc: "Gemini status & diagnostics" },
+      {
+        to: "/settings/ai",
+        icon: Sparkles,
+        label: "AI Configuration",
+        desc: "Gemini status & diagnostics",
+      },
     ],
   },
   {
     title: "Legal",
     items: [
-      { to: "/settings/privacy", icon: ShieldCheck, label: "Privacy Policy", desc: "How we handle your data" },
-      { to: "/settings/terms", icon: FileText, label: "Terms of Service", desc: "Using Nosky HomeOS" },
-      { to: "/settings/disclaimer", icon: AlertTriangle, label: "Disclaimer", desc: "Hardware & service notice" },
+      {
+        to: "/settings/privacy",
+        icon: ShieldCheck,
+        label: "Privacy Policy",
+        desc: "How we handle your data",
+      },
+      {
+        to: "/settings/terms",
+        icon: FileText,
+        label: "Terms of Service",
+        desc: "Using Nosky HomeOS",
+      },
+      {
+        to: "/settings/disclaimer",
+        icon: AlertTriangle,
+        label: "Disclaimer",
+        desc: "Hardware & service notice",
+      },
     ],
   },
 ] as const;

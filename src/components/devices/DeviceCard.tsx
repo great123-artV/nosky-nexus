@@ -1,21 +1,10 @@
 import React, { useState } from "react";
 import { Device } from "./types";
-import {
-  Lightbulb,
-  Plug,
-  Wind,
-  Battery,
-  Thermometer,
-  ChevronDown,
-  LucideIcon,
-} from "lucide-react";
+import { Lightbulb, Plug, Wind, Battery, Thermometer, ChevronDown, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleContent,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { useDeviceStore } from "@/hooks/useDeviceStore";
 
 interface DeviceCardProps {
@@ -35,7 +24,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
   const { togglePowerState, setPowerState, zones } = useDeviceStore();
   const isActive = device.powerState === "on";
   const isOnline = device.status === "online";
-  const zoneName = zones.find(z => z.id === device.zoneId)?.name || "Unknown Zone";
+  const zoneName = zones.find((z) => z.id === device.zoneId)?.name || "Unknown Zone";
 
   const Icon = ICON_MAP[device.type] || Lightbulb;
 
@@ -43,17 +32,21 @@ export function DeviceCard({ device }: DeviceCardProps) {
   const isComingSoon = ["AC", "Fan", "Inverter"].includes(device.type);
 
   return (
-    <div className={cn(
-      "glass rounded-3xl border border-white/5 transition-all duration-300 overflow-hidden",
-      isOpen ? "ring-1 ring-primary/20 shadow-2xl" : "hover:border-primary/20 hover:scale-[1.01]"
-    )}>
+    <div
+      className={cn(
+        "glass rounded-3xl border border-white/5 transition-all duration-300 overflow-hidden",
+        isOpen ? "ring-1 ring-primary/20 shadow-2xl" : "hover:border-primary/20 hover:scale-[1.01]",
+      )}
+    >
       <div className="p-5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0">
-            <div className={cn(
-              "h-12 w-12 rounded-2xl flex items-center justify-center transition-colors",
-              isActive ? "bg-primary/20 text-primary" : "bg-white/5 text-muted-foreground"
-            )}>
+            <div
+              className={cn(
+                "h-12 w-12 rounded-2xl flex items-center justify-center transition-colors",
+                isActive ? "bg-primary/20 text-primary" : "bg-white/5 text-muted-foreground",
+              )}
+            >
               <Icon className={cn("h-6 w-6", isActive && "animate-pulse")} />
             </div>
             <div className="min-w-0">
@@ -64,7 +57,10 @@ export function DeviceCard({ device }: DeviceCardProps) {
 
           <div className="flex items-center gap-3">
             {isComingSoon ? (
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider">
+              <Badge
+                variant="secondary"
+                className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider"
+              >
                 Coming Soon
               </Badge>
             ) : (
@@ -88,7 +84,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
               "p-2 rounded-xl bg-white/5 text-muted-foreground hover:text-white hover:bg-white/10 transition-all",
-              isOpen && "rotate-180 bg-primary/10 text-primary"
+              isOpen && "rotate-180 bg-primary/10 text-primary",
             )}
           >
             <ChevronDown className="h-4 w-4" />
@@ -106,21 +102,30 @@ export function DeviceCard({ device }: DeviceCardProps) {
             )}
             {device.type === "Inverter" && (
               <div className="py-4 text-center">
-                <p className="text-sm font-medium text-muted-foreground">Inverter Monitoring Coming Soon</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Inverter Monitoring Coming Soon
+                </p>
               </div>
             )}
             {device.type === "Fan" && (
               <div className="py-4 text-center">
-                <p className="text-sm font-medium text-muted-foreground">Fan Speed Regulation Coming Soon</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Fan Speed Regulation Coming Soon
+                </p>
               </div>
             )}
-            {(!isComingSoon) && (
+            {!isComingSoon && (
               <div className="flex items-center justify-between py-2">
                 <span className="text-xs text-muted-foreground">Status</span>
-                <Badge variant="outline" className={cn(
-                  "text-[10px] uppercase",
-                  isOnline ? "text-emerald-400 border-emerald-400/20" : "text-destructive border-destructive/20"
-                )}>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-[10px] uppercase",
+                    isOnline
+                      ? "text-emerald-400 border-emerald-400/20"
+                      : "text-destructive border-destructive/20",
+                  )}
+                >
                   {device.status}
                 </Badge>
               </div>

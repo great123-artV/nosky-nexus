@@ -32,9 +32,7 @@ export function LegalShell({
 export function PrivacyContent() {
   return (
     <LegalShell title="Privacy Policy" effective={new Date().toLocaleDateString()}>
-      <p>
-        Nosky HomeOS respects user privacy and is committed to protecting user information.
-      </p>
+      <p>Nosky HomeOS respects user privacy and is committed to protecting user information.</p>
       <Section title="Information We Collect">
         <ul>
           <li>Name</li>
@@ -54,8 +52,8 @@ export function PrivacyContent() {
       </Section>
       <Section title="Data Protection">
         <p>
-          We implement security practices to protect user information. We do not sell personal
-          user information.
+          We implement security practices to protect user information. We do not sell personal user
+          information.
         </p>
       </Section>
       <Section title="User Rights">
@@ -78,14 +76,14 @@ export function TermsContent() {
       <Section title="Acceptable Use">
         <p>
           You agree to use Nosky HomeOS only for lawful purposes related to managing your own
-          smart-home installation. You may not interfere with other users, the service, or
-          connected devices you do not own.
+          smart-home installation. You may not interfere with other users, the service, or connected
+          devices you do not own.
         </p>
       </Section>
       <Section title="Account Responsibility">
         <p>
-          You are responsible for maintaining the confidentiality of your account credentials
-          and all activity occurring under your account.
+          You are responsible for maintaining the confidentiality of your account credentials and
+          all activity occurring under your account.
         </p>
       </Section>
       <Section title="Service Availability">
@@ -96,8 +94,8 @@ export function TermsContent() {
       </Section>
       <Section title="Updates">
         <p>
-          We may update, enhance, or remove features at any time to improve the product or
-          maintain security.
+          We may update, enhance, or remove features at any time to improve the product or maintain
+          security.
         </p>
       </Section>
       <Section title="Termination">
@@ -115,8 +113,8 @@ export function DisclaimerContent() {
     <LegalShell title="Disclaimer">
       <p>
         Nosky HomeOS is designed to provide smart home monitoring and control features. Device
-        availability, automation performance, and hardware compatibility depend on the
-        connected devices and installation environment.
+        availability, automation performance, and hardware compatibility depend on the connected
+        devices and installation environment.
       </p>
       <Section title="Nosky Tech is not responsible for">
         <ul>
@@ -136,12 +134,12 @@ export function AboutContent() {
     <LegalShell title="About Nosky HomeOS">
       <p>
         Nosky HomeOS is a smart home operating system developed by Nosky Tech. It provides
-        intelligent control and monitoring of connected home devices including lighting,
-        climate systems, power management, and automation.
+        intelligent control and monitoring of connected home devices including lighting, climate
+        systems, power management, and automation.
       </p>
       <p>
-        Our goal is to create a seamless smart living experience where technology works
-        naturally around everyday life.
+        Our goal is to create a seamless smart living experience where technology works naturally
+        around everyday life.
       </p>
       <Section title="Developed By">
         <p>

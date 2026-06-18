@@ -1,0 +1,26 @@
+{
+  "name": "Nosky HomeOS",
+  "short_name": "HomeOS",
+  "description": "Smart Living. Seamlessly Connected.",
+  "developer": {
+    "name": "Nosky Tech"
+  },
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
