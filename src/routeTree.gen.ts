@@ -11,12 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ZonesRouteImport } from './routes/zones'
 import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as ScenesRouteImport } from './routes/scenes'
-import { Route as NotificationsRouteImport } from './routes/notifications'
-import { Route as FloorPlanRouteImport } from './routes/floor-plan'
-import { Route as DevicesRouteImport } from './routes/devices'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ZonesIndexRouteImport } from './routes/zones.index'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
@@ -39,34 +34,9 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ScenesRoute = ScenesRouteImport.update({
-  id: '/scenes',
-  path: '/scenes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FloorPlanRoute = FloorPlanRouteImport.update({
-  id: '/floor-plan',
-  path: '/floor-plan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevicesRoute = DevicesRouteImport.update({
-  id: '/devices',
-  path: '/devices',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnalyticsRoute = AnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -127,12 +97,7 @@ const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/analytics': typeof AnalyticsRoute
   '/auth': typeof AuthRoute
-  '/devices': typeof DevicesRoute
-  '/floor-plan': typeof FloorPlanRoute
-  '/notifications': typeof NotificationsRoute
-  '/scenes': typeof ScenesRoute
   '/settings': typeof SettingsRouteWithChildren
   '/zones': typeof ZonesRouteWithChildren
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -148,12 +113,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/analytics': typeof AnalyticsRoute
   '/auth': typeof AuthRoute
-  '/devices': typeof DevicesRoute
-  '/floor-plan': typeof FloorPlanRoute
-  '/notifications': typeof NotificationsRoute
-  '/scenes': typeof ScenesRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/settings/about': typeof SettingsAboutRoute
@@ -168,12 +128,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/analytics': typeof AnalyticsRoute
   '/auth': typeof AuthRoute
-  '/devices': typeof DevicesRoute
-  '/floor-plan': typeof FloorPlanRoute
-  '/notifications': typeof NotificationsRoute
-  '/scenes': typeof ScenesRoute
   '/settings': typeof SettingsRouteWithChildren
   '/zones': typeof ZonesRouteWithChildren
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -191,12 +146,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/analytics'
     | '/auth'
-    | '/devices'
-    | '/floor-plan'
-    | '/notifications'
-    | '/scenes'
     | '/settings'
     | '/zones'
     | '/legal/privacy'
@@ -212,12 +162,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/analytics'
     | '/auth'
-    | '/devices'
-    | '/floor-plan'
-    | '/notifications'
-    | '/scenes'
     | '/legal/privacy'
     | '/legal/terms'
     | '/settings/about'
@@ -231,12 +176,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/analytics'
     | '/auth'
-    | '/devices'
-    | '/floor-plan'
-    | '/notifications'
-    | '/scenes'
     | '/settings'
     | '/zones'
     | '/legal/privacy'
@@ -253,12 +193,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AnalyticsRoute: typeof AnalyticsRoute
   AuthRoute: typeof AuthRoute
-  DevicesRoute: typeof DevicesRoute
-  FloorPlanRoute: typeof FloorPlanRoute
-  NotificationsRoute: typeof NotificationsRoute
-  ScenesRoute: typeof ScenesRoute
   SettingsRoute: typeof SettingsRouteWithChildren
   ZonesRoute: typeof ZonesRouteWithChildren
   LegalPrivacyRoute: typeof LegalPrivacyRoute
@@ -281,46 +216,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/scenes': {
-      id: '/scenes'
-      path: '/scenes'
-      fullPath: '/scenes'
-      preLoaderRoute: typeof ScenesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/floor-plan': {
-      id: '/floor-plan'
-      path: '/floor-plan'
-      fullPath: '/floor-plan'
-      preLoaderRoute: typeof FloorPlanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/devices': {
-      id: '/devices'
-      path: '/devices'
-      fullPath: '/devices'
-      preLoaderRoute: typeof DevicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/analytics': {
-      id: '/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -439,12 +339,7 @@ const ZonesRouteWithChildren = ZonesRoute._addFileChildren(ZonesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AnalyticsRoute: AnalyticsRoute,
   AuthRoute: AuthRoute,
-  DevicesRoute: DevicesRoute,
-  FloorPlanRoute: FloorPlanRoute,
-  NotificationsRoute: NotificationsRoute,
-  ScenesRoute: ScenesRoute,
   SettingsRoute: SettingsRouteWithChildren,
   ZonesRoute: ZonesRouteWithChildren,
   LegalPrivacyRoute: LegalPrivacyRoute,
@@ -453,3 +348,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { Sofa, Bed, Baby, Box, ChefHat, Footprints, Lightbulb, Thermometer } from "lucide-react";
+import { Sofa, Bed, Baby, Box, Lightbulb, LucideIcon } from "lucide-react";
 import { mockZones, mockDevices } from "@/components/devices/mockData";
 import { Link } from "@tanstack/react-router";
 
@@ -14,13 +14,11 @@ export const Route = createFileRoute("/zones")({
   component: ZonesLayout,
 });
 
-const ICON_MAP: Record<string, any> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   sofa: Sofa,
   bed: Bed,
   baby: Baby,
   box: Box,
-  chefHat: ChefHat,
-  footprints: Footprints,
 };
 
 function ZonesLayout() {
@@ -63,25 +61,17 @@ export function ZonesList() {
                         : "bg-muted/40 text-muted-foreground border border-border"
                     }`}
                   >
-                    {onlineDevices === zoneDevices.length ? "All Online" : `${onlineDevices}/${zoneDevices.length} Online`}
+                    {onlineDevices === zoneDevices.length ? "All Online" : `${onlineDevices}/${zoneDevices.length} Connected`}
                   </span>
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="mt-6 grid grid-cols-1 gap-3">
                   <div className="rounded-lg bg-surface/40 border border-border p-3">
                     <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">
-                      <Thermometer className="h-3 w-3" /> Climate
+                      <Lightbulb className="h-3 w-3" /> System Status
                     </div>
                     <div className="mt-1 font-display text-lg font-semibold">
-                      {zoneDevices.find(d => d.type === "AC") ? "22°C" : "--"}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-surface/40 border border-border p-3">
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">
-                      <Lightbulb className="h-3 w-3" /> Status
-                    </div>
-                    <div className="mt-1 font-display text-lg font-semibold">
-                      {activeDevices} active
+                      {activeDevices} active devices
                     </div>
                   </div>
                 </div>

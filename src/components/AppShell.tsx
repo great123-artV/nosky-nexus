@@ -2,29 +2,20 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
-  Layout,
   Home,
-  Cpu,
-  Sparkles,
-  BarChart3,
-  Bell,
   Settings,
   Search,
   Power,
   User,
   LogOut,
   X,
+  LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/floor-plan", label: "Floor Plan", icon: Layout },
   { to: "/zones", label: "Zones", icon: Home },
-  { to: "/devices", label: "Devices", icon: Cpu },
-  { to: "/scenes", label: "Scenes", icon: Sparkles },
-  { to: "/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/notifications", label: "Notifications", icon: Bell },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -90,7 +81,7 @@ export function AppShell({
         <nav className="flex-1 p-3 space-y-1">
           {nav.map((item) => {
             const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
-            const Icon = item.icon;
+            const Icon: LucideIcon = item.icon;
             return (
               <Link
                 key={item.to}
@@ -160,15 +151,6 @@ export function AppShell({
               </button>
 
               <Link
-                to="/notifications"
-                aria-label="Notifications"
-                className="glass h-9 w-9 rounded-lg grid place-items-center hover:bg-accent transition-colors relative"
-              >
-                <Bell className="h-4 w-4 text-muted-foreground" />
-                <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary" />
-              </Link>
-
-              <Link
                 to="/settings"
                 aria-label="Settings"
                 className="glass h-9 w-9 rounded-lg grid place-items-center hover:bg-accent transition-colors"
@@ -229,10 +211,10 @@ export function AppShell({
 
         {/* Mobile bottom nav */}
         <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/80 backdrop-blur-xl">
-          <div className="grid grid-cols-5">
-            {nav.slice(0, 5).map((item) => {
+          <div className="grid grid-cols-3">
+            {nav.map((item) => {
               const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
-              const Icon = item.icon;
+              const Icon: LucideIcon = item.icon;
               return (
                 <Link
                   key={item.to}
