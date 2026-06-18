@@ -9,12 +9,13 @@ import {
   Sparkles,
   Loader2,
   Power,
-  AlertTriangle
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { useDeviceStore } from "@/hooks/useDeviceStore";
+import { useSettingsStore } from "@/hooks/useSettingsStore";
 import { processUserCommand, CipherIntent, isGeminiConfigured } from "@/lib/gemini.service";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ interface Message {
 
 export function CipherAssistant() {
   const [isOpen, setIsOpen] = useState(false);
+  const { cipherVolume, cipherSpeed, cipherVoiceId, cipherEnabled } = useSettingsStore();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,11 +38,20 @@ export function CipherAssistant() {
     transcript,
     startListening,
     stopListening,
-    browserSupportsSpeechRecognition
+    browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
 
   const { speak } = useSpeechSynthesis();
   const { devices, zones, setPowerState } = useDeviceStore();
+
+  const handleSpeak = (text: string) => {
+    if (!cipherEnabled) return;
+    speak(text, {
+      volume: cipherVolume,
+      rate: cipherSpeed,
+      voiceId: cipherVoiceId || undefined,
+    });
+  };
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const configured = isGeminiConfigured();
@@ -77,10 +88,10 @@ export function CipherAssistant() {
     const userMessage: Message = {
       role: "user",
       content: text,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
 
@@ -92,10 +103,10 @@ export function CipherAssistant() {
       const errorMessage: Message = {
         role: "assistant",
         content: "I'm sorry, I encountered an error. Please try again.",
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      setMessages(prev => [...prev, errorMessage]);
-      speak(errorMessage.content);
+      setMessages((prev) => [...prev, errorMessage]);
+      handleSpeak(errorMessage.content);
     } finally {
       setIsLoading(false);
     }
@@ -106,17 +117,19 @@ export function CipherAssistant() {
 
     if (result.intent === "device_control" && result.device && result.action) {
       // Find the device
-      const targetZone = zones.find(z => z.name.toLowerCase() === result.zone?.toLowerCase());
+      const targetZone = zones.find((z) => z.name.toLowerCase() === result.zone?.toLowerCase());
 
       let targetDevice;
       if (targetZone) {
-        targetDevice = devices.find(d =>
-          d.zoneId === targetZone.id &&
-          d.name.toLowerCase() === result.device?.toLowerCase()
+        targetDevice = devices.find(
+          (d) =>
+            d.zoneId === targetZone.id && d.name.toLowerCase() === result.device?.toLowerCase(),
         );
       } else {
         // Search globally if zone is not specified or not found
-        const matchingDevices = devices.filter(d => d.name.toLowerCase() === result.device?.toLowerCase());
+        const matchingDevices = devices.filter(
+          (d) => d.name.toLowerCase() === result.device?.toLowerCase(),
+        );
         if (matchingDevices.length === 1) {
           targetDevice = matchingDevices[0];
         } else if (matchingDevices.length > 1) {
@@ -134,7 +147,11 @@ export function CipherAssistant() {
           setPowerState(targetDevice.id, result.action);
           toast.success(finalResponse);
         }
-      } else if (result.intent === "device_control" && !targetDevice && !finalResponse.includes("Which room")) {
+      } else if (
+        result.intent === "device_control" &&
+        !targetDevice &&
+        !finalResponse.includes("Which room")
+      ) {
         finalResponse = `I couldn't find the ${result.device}${result.zone ? ` in the ${result.zone}` : ""}. Could you please specify the room and device name correctly?`;
       }
     }
@@ -142,11 +159,11 @@ export function CipherAssistant() {
     const assistantMessage: Message = {
       role: "assistant",
       content: finalResponse,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
-    setMessages(prev => [...prev, assistantMessage]);
-    speak(finalResponse);
+    setMessages((prev) => [...prev, assistantMessage]);
+    handleSpeak(finalResponse);
   };
 
   const handleMicClick = () => {
@@ -178,8 +195,17 @@ export function CipherAssistant() {
                 <Sparkles className="h-5 w-5 text-primary-foreground" />
               </div>
               <div>
-                <h3 className="font-display font-semibold text-sm">Cipher AI</h3>
-                <p className="text-[10px] uppercase tracking-widest text-primary/80">HomeOS Assistant</p>
+                <h3 className="font-display font-semibold text-sm flex items-center gap-1.5">
+                  Cipher AI
+                  {!configured && (
+                    <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-muted-foreground font-mono">
+                      Mock
+                    </span>
+                  )}
+                </h3>
+                <p className="text-[10px] uppercase tracking-widest text-primary/80">
+                  HomeOS Assistant
+                </p>
               </div>
             </div>
             <button
@@ -192,12 +218,13 @@ export function CipherAssistant() {
 
           {/* Fallback Banner */}
           {!configured && (
-            <div className="mx-4 mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+            <div className="mx-4 mt-4 p-3 bg-primary/10 border border-primary/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-bold text-destructive">⚠ AI Services Unavailable</p>
-                <p className="text-[10px] text-destructive/80 leading-tight mt-0.5">
-                  Gemini is currently unavailable or not configured. Please configure Gemini AI to enable Cipher Assistant.
+                <p className="text-xs font-bold text-primary">Mock Mode Active</p>
+                <p className="text-[10px] text-primary/80 leading-tight mt-0.5">
+                  Using local command processing. To enable full AI features, configure
+                  VITE_GEMINI_API_KEY.
                 </p>
               </div>
             </div>
@@ -225,19 +252,24 @@ export function CipherAssistant() {
                   key={i}
                   className={cn(
                     "flex flex-col max-w-[85%] space-y-1 animate-in fade-in slide-in-from-bottom-2",
-                    msg.role === "user" ? "ml-auto items-end" : "mr-auto items-start"
+                    msg.role === "user" ? "ml-auto items-end" : "mr-auto items-start",
                   )}
                 >
-                  <div className={cn(
-                    "px-4 py-2.5 rounded-2xl text-sm",
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-tr-none"
-                      : "glass text-white rounded-tl-none border-white/5"
-                  )}>
+                  <div
+                    className={cn(
+                      "px-4 py-2.5 rounded-2xl text-sm",
+                      msg.role === "user"
+                        ? "bg-primary text-primary-foreground rounded-tr-none"
+                        : "glass text-white rounded-tl-none border-white/5",
+                    )}
+                  >
                     {msg.content}
                   </div>
                   <span className="text-[9px] text-muted-foreground/50 px-1">
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(msg.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
               ))}
@@ -246,7 +278,9 @@ export function CipherAssistant() {
                 <div className="flex mr-auto items-start animate-in fade-in">
                   <div className="glass px-4 py-2.5 rounded-2xl rounded-tl-none border-white/5 flex items-center gap-2">
                     <Loader2 className="h-3 w-3 animate-spin text-primary" />
-                    <span className="text-xs text-muted-foreground tracking-tight">Cipher is thinking...</span>
+                    <span className="text-xs text-muted-foreground tracking-tight">
+                      Cipher is thinking...
+                    </span>
                   </div>
                 </div>
               )}
@@ -258,8 +292,15 @@ export function CipherAssistant() {
           {isListening && (
             <div className="px-4 py-2 bg-primary/10 border-t border-primary/20 flex items-center gap-3 animate-pulse">
               <div className="flex gap-0.5 items-center">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className={cn("w-0.5 bg-primary rounded-full animate-bounce", i % 2 === 0 ? "h-3" : "h-2")} style={{ animationDelay: `${i * 0.1}s` }} />
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "w-0.5 bg-primary rounded-full animate-bounce",
+                      i % 2 === 0 ? "h-3" : "h-2",
+                    )}
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  />
                 ))}
               </div>
               <p className="text-xs text-primary font-medium truncate">
@@ -271,19 +312,23 @@ export function CipherAssistant() {
           {/* Input Area */}
           <div className="p-4 bg-white/5 border-t border-white/5">
             <form onSubmit={handleFormSubmit} className="flex items-center gap-2">
-              <div className={cn(
-                "flex-1 glass rounded-xl px-3 py-1.5 flex items-center gap-2 transition-colors",
-                configured ? "focus-within:border-primary/40" : "opacity-50 cursor-not-allowed"
-              )}>
+              <div
+                className={cn(
+                  "flex-1 glass rounded-xl px-3 py-1.5 flex items-center gap-2 transition-colors focus-within:border-primary/40",
+                )}
+              >
                 <input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder={configured ? "Ask Cipher..." : "AI disabled..."}
+                  placeholder="Ask Cipher..."
                   className="bg-transparent outline-none text-sm w-full py-1 text-white placeholder:text-muted-foreground/50 disabled:cursor-not-allowed"
-                  disabled={isLoading || !configured}
+                  disabled={isLoading}
                 />
                 {inputValue.trim() ? (
-                  <button type="submit" className="text-primary hover:scale-110 transition-transform">
+                  <button
+                    type="submit"
+                    className="text-primary hover:scale-110 transition-transform"
+                  >
                     <Send className="h-4 w-4" />
                   </button>
                 ) : (
@@ -294,14 +339,12 @@ export function CipherAssistant() {
               <button
                 type="button"
                 onClick={handleMicClick}
-                disabled={!browserSupportsSpeechRecognition || isLoading || !configured}
+                disabled={!browserSupportsSpeechRecognition || isLoading}
                 className={cn(
                   "h-10 w-10 rounded-xl flex items-center justify-center transition-all",
-                  !configured
-                    ? "bg-white/5 text-muted-foreground cursor-not-allowed"
-                    : isListening
-                      ? "bg-destructive text-destructive-foreground animate-pulse"
-                      : "bg-primary text-primary-foreground glow-primary hover:scale-105"
+                  isListening
+                    ? "bg-destructive text-destructive-foreground animate-pulse"
+                    : "bg-primary text-primary-foreground glow-primary hover:scale-105",
                 )}
               >
                 {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -318,7 +361,7 @@ export function CipherAssistant() {
           "h-14 px-6 rounded-2xl flex items-center gap-3 font-display font-bold text-sm tracking-tight transition-all duration-300 shadow-2xl group",
           isOpen
             ? "bg-white/10 text-white border border-white/20"
-            : "bg-primary text-primary-foreground glow-primary hover:scale-105"
+            : "bg-primary text-primary-foreground glow-primary hover:scale-105",
         )}
       >
         <div className="relative">

@@ -9,22 +9,48 @@ interface UseSpeechRecognitionReturn {
   browserSupportsSpeechRecognition: boolean;
 }
 
+// Minimal types for Web Speech API
+interface SpeechRecognitionResult {
+  0: { transcript: string };
+}
+interface SpeechRecognitionEvent {
+  results: Iterable<SpeechRecognitionResult>;
+}
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onend: () => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  start: () => void;
+  stop: () => void;
+}
+
 export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const [recognition, setRecognition] = useState<any>(null);
+  const [recognition, setRecognition] = useState<SpeechRecognitionInstance | null>(null);
 
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognitionInstance = new SpeechRecognition();
+    const GlobalWindow = window as unknown as {
+      SpeechRecognition?: new () => SpeechRecognitionInstance;
+      webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+    };
+    const SpeechRecognitionConstructor =
+      GlobalWindow.SpeechRecognition || GlobalWindow.webkitSpeechRecognition;
+    if (SpeechRecognitionConstructor) {
+      const recognitionInstance = new SpeechRecognitionConstructor();
       recognitionInstance.continuous = false;
       recognitionInstance.interimResults = true;
       recognitionInstance.lang = "en-US";
 
-      recognitionInstance.onresult = (event: any) => {
+      recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
         const currentTranscript = Array.from(event.results)
-          .map((result: any) => result[0].transcript)
+          .map((result) => result[0].transcript)
           .join("");
         setTranscript(currentTranscript);
       };
@@ -33,7 +59,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         setIsListening(false);
       };
 
-      recognitionInstance.onerror = (event: any) => {
+      recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error("Speech recognition error", event.error);
         setIsListening(false);
       };

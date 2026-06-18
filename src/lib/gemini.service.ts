@@ -70,9 +70,45 @@ export async function processUserCommand(command: string): Promise<CipherIntent>
   const genAIInstance = getGenAI();
 
   if (!genAIInstance) {
+    // Mock Mode
+    console.log("Cipher AI: Mock Mode Active");
+    const lowerCommand = command.toLowerCase();
+
+    if (lowerCommand.includes("turn on") || lowerCommand.includes("switch on")) {
+      const device = lowerCommand.replace(/turn on|switch on|the/g, "").trim();
+      return {
+        intent: "device_control",
+        device: device.charAt(0).toUpperCase() + device.slice(1),
+        action: "on",
+        response: `Turning on ${device}. (Mock Mode)`,
+      };
+    }
+
+    if (lowerCommand.includes("turn off") || lowerCommand.includes("switch off")) {
+      const device = lowerCommand.replace(/turn off|switch off|the/g, "").trim();
+      return {
+        intent: "device_control",
+        device: device.charAt(0).toUpperCase() + device.slice(1),
+        action: "off",
+        response: `${device} switched off. (Mock Mode)`,
+      };
+    }
+
+    if (
+      lowerCommand.includes("ac") ||
+      lowerCommand.includes("fan") ||
+      lowerCommand.includes("inverter")
+    ) {
+      return {
+        intent: "coming_soon",
+        response: "This feature is coming soon to Nosky HomeOS. (Mock Mode)",
+      };
+    }
+
     return {
       intent: "unknown",
-      response: "Gemini AI is not configured. Expected environment variable: VITE_GEMINI_API_KEY. Please add the variable in the project environment settings and redeploy the application.",
+      response:
+        "I am Cipher AI (Mock Mode). I can help you control devices like lights or sockets.",
     };
   }
 
@@ -92,15 +128,17 @@ export async function processUserCommand(command: string): Promise<CipherIntent>
 
     const responseText = result.response.text();
     return JSON.parse(responseText) as CipherIntent;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error calling Gemini API:", error);
 
     let errorMessage = "I'm sorry, I encountered an error while processing your request.";
 
-    if (error?.message?.includes("API_KEY_INVALID")) {
-      errorMessage = "The Gemini API key provided is invalid. Please check your configuration.";
-    } else if (error?.message?.includes("quota")) {
-      errorMessage = "The AI service is currently at its limit. Please try again later.";
+    if (error instanceof Error) {
+      if (error.message.includes("API_KEY_INVALID")) {
+        errorMessage = "The Gemini API key provided is invalid. Please check your configuration.";
+      } else if (error.message.includes("quota")) {
+        errorMessage = "The AI service is currently at its limit. Please try again later.";
+      }
     }
 
     return {
@@ -125,9 +163,10 @@ export async function testGeminiConnection(): Promise<{ success: boolean; messag
       return { success: true, message: "Gemini Connected" };
     }
     return { success: false, message: "Unexpected response from Gemini." };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Gemini Connection Test Failed:", error);
-    return { success: false, message: error.message || "Connection Failed" };
+    const message = error instanceof Error ? error.message : "Connection Failed";
+    return { success: false, message };
   }
 }
 

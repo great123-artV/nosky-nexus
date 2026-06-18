@@ -4,7 +4,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, KeyRound, User as UserIcon, Mail, Calendar } from "lucide-react";
+import {
+  LogOut,
+  Save,
+  KeyRound,
+  User as UserIcon,
+  Mail,
+  Calendar,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+} from "lucide-react";
+import { getPasswordStrength, cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings/profile")({
   head: () => ({ meta: [{ title: "Profile — Nosky HomeOS" }] }),
@@ -16,7 +27,11 @@ function ProfilePage() {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  const strength = getPasswordStrength(newPassword);
+  const isPasswordValid = strength !== "invalid";
 
   useEffect(() => {
     if (profile) setFullName(profile.full_name);
@@ -38,7 +53,7 @@ function ProfilePage() {
   };
 
   const changePassword = async () => {
-    if (newPassword.length < 6) return toast.error("Password must be at least 6 characters");
+    if (!isPasswordValid) return toast.error("Password must be at least 8 characters");
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     setBusy(false);
@@ -106,18 +121,77 @@ function ProfilePage() {
             <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
               New Password
             </span>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="At least 6 characters"
-              className="auth-input mt-1.5"
-            />
+            <div className="relative mt-1.5">
+              <input
+                type={showPw ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                className="auth-input pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            {newPassword.length > 0 && (
+              <div className="mt-3 space-y-1.5">
+                <div className="flex gap-1 h-1">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "flex-1 rounded-full transition-all duration-500",
+                        i === 1 && strength !== "invalid"
+                          ? "bg-red-500"
+                          : i === 2 &&
+                              (strength === "medium" ||
+                                strength === "strong" ||
+                                strength === "excellent")
+                            ? "bg-orange-500"
+                            : i === 3 && (strength === "strong" || strength === "excellent")
+                              ? "bg-emerald-500"
+                              : i === 4 && strength === "excellent"
+                                ? "bg-primary glow-primary"
+                                : "bg-white/10",
+                      )}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span
+                    className={cn(
+                      "text-[10px] font-bold uppercase tracking-wider",
+                      strength === "invalid"
+                        ? "text-destructive"
+                        : strength === "weak"
+                          ? "text-red-500"
+                          : strength === "medium"
+                            ? "text-orange-500"
+                            : strength === "strong"
+                              ? "text-emerald-500"
+                              : "text-primary",
+                    )}
+                  >
+                    {strength === "invalid" ? "Too Short" : strength}
+                  </span>
+                  {strength === "excellent" && <ShieldCheck className="h-3 w-3 text-primary" />}
+                </div>
+              </div>
+            )}
+            {newPassword.length > 0 && newPassword.length < 8 && (
+              <p className="text-xs text-destructive mt-1">
+                Password must be at least 8 characters long.
+              </p>
+            )}
           </label>
           <button
             onClick={changePassword}
-            disabled={busy || newPassword.length < 6}
-            className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
+            disabled={busy || !isPasswordValid}
+            className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50 glow-primary transition-all active:scale-95"
           >
             <KeyRound className="h-4 w-4" /> Update password
           </button>

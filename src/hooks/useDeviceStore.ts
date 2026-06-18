@@ -20,7 +20,7 @@ export const useDeviceStore = create<DeviceState>()(
       setPowerState: (deviceId, powerState) =>
         set((state) => ({
           devices: state.devices.map((d) =>
-            d.id === deviceId ? { ...d, powerState, lastActivity: "Just now" } : d
+            d.id === deviceId ? { ...d, powerState, lastActivity: "Just now" } : d,
           ),
         })),
       togglePowerState: (deviceId) =>
@@ -32,7 +32,7 @@ export const useDeviceStore = create<DeviceState>()(
                   powerState: d.powerState === "on" ? "off" : "on",
                   lastActivity: "Just now",
                 }
-              : d
+              : d,
           ),
         })),
       getDeviceById: (deviceId) => get().devices.find((d) => d.id === deviceId),
@@ -40,6 +40,6 @@ export const useDeviceStore = create<DeviceState>()(
     }),
     {
       name: "nosky-device-storage",
-    }
-  )
+    },
+  ),
 );

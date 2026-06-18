@@ -11,15 +11,17 @@ export const Route = createFileRoute("/zones/$zoneId")({
 function ZoneDetail() {
   const { zoneId } = Route.useParams();
   const { zones, devices } = useDeviceStore();
-  const zone = zones.find(z => z.id === zoneId);
-  const zoneDevices = devices.filter(d => d.zoneId === zoneId);
+  const zone = zones.find((z) => z.id === zoneId);
+  const zoneDevices = devices.filter((d) => d.zoneId === zoneId);
 
   if (!zone) {
     return (
       <AppShell title="Zone Not Found">
         <div className="text-center py-20">
           <h2 className="text-2xl font-bold mb-4">Zone Not Found</h2>
-          <Link to="/zones" className="text-primary hover:underline">Back to Zones</Link>
+          <Link to="/zones" className="text-primary hover:underline">
+            Back to Zones
+          </Link>
         </div>
       </AppShell>
     );
@@ -43,14 +45,14 @@ function ZoneDetail() {
           </div>
 
           <div className="flex items-center gap-3">
-             <button className="glass h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-medium hover:bg-accent transition-colors">
-                <Settings className="h-4 w-4" />
-                Settings
-             </button>
-             <button className="glass-strong h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
-                <Power className="h-4 w-4" />
-                Off
-             </button>
+            <button className="glass h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-medium hover:bg-accent transition-colors">
+              <Settings className="h-4 w-4" />
+              Settings
+            </button>
+            <button className="glass-strong h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
+              <Power className="h-4 w-4" />
+              Off
+            </button>
           </div>
         </div>
 
@@ -64,7 +66,7 @@ function ZoneDetail() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {zoneDevices.map(device => (
+            {zoneDevices.map((device) => (
               <DeviceCard key={device.id} device={device} />
             ))}
           </div>

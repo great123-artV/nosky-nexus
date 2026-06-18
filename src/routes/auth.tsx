@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Power, Loader2, Eye, EyeOff } from "lucide-react";
+import { Power, Loader2, Eye, EyeOff, ShieldCheck, ShieldAlert, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { getPasswordStrength, cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -138,16 +139,17 @@ function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  const passwordsMatch = password.length >= 6 && password === confirm;
+  const strength = getPasswordStrength(password);
+  const isPasswordValid = strength !== "invalid";
+  const passwordsMatch = isPasswordValid && password === confirm;
+
   const canSubmit =
-    fullName.trim().length > 1 &&
-    email.includes("@") &&
-    passwordsMatch &&
-    accepted &&
-    !busy;
+    fullName.trim().length > 1 && email.includes("@") && passwordsMatch && accepted && !busy;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,29 +199,101 @@ function SignUpForm() {
         />
       </Field>
       <Field label="Password">
-        <input
-          type="password"
-          required
-          minLength={6}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="auth-input"
-          placeholder="At least 6 characters"
-          autoComplete="new-password"
-        />
+        <div className="relative">
+          <input
+            type={showPw ? "text" : "password"}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="auth-input pr-10"
+            placeholder="At least 8 characters"
+            autoComplete="new-password"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw((v) => !v)}
+            aria-label={showPw ? "Hide password" : "Show password"}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
+        {password.length > 0 && (
+          <div className="mt-2 space-y-1.5">
+            <div className="flex gap-1 h-1">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "flex-1 rounded-full transition-all duration-500",
+                    i === 1 && strength !== "invalid"
+                      ? "bg-red-500"
+                      : i === 2 &&
+                          (strength === "medium" ||
+                            strength === "strong" ||
+                            strength === "excellent")
+                        ? "bg-orange-500"
+                        : i === 3 && (strength === "strong" || strength === "excellent")
+                          ? "bg-emerald-500"
+                          : i === 4 && strength === "excellent"
+                            ? "bg-primary glow-primary"
+                            : "bg-white/10",
+                  )}
+                />
+              ))}
+            </div>
+            <div className="flex items-center justify-between">
+              <span
+                className={cn(
+                  "text-[10px] font-bold uppercase tracking-wider",
+                  strength === "invalid"
+                    ? "text-destructive"
+                    : strength === "weak"
+                      ? "text-red-500"
+                      : strength === "medium"
+                        ? "text-orange-500"
+                        : strength === "strong"
+                          ? "text-emerald-500"
+                          : "text-primary",
+                )}
+              >
+                {strength === "invalid" ? "Too Short" : strength}
+              </span>
+              {strength === "excellent" && <ShieldCheck className="h-3 w-3 text-primary" />}
+            </div>
+          </div>
+        )}
+        {password.length > 0 && password.length < 8 && (
+          <p className="text-xs text-destructive mt-1">
+            Password must be at least 8 characters long.
+          </p>
+        )}
       </Field>
+
       <Field label="Confirm Password">
-        <input
-          type="password"
-          required
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          className="auth-input"
-          placeholder="Re-enter password"
-          autoComplete="new-password"
-        />
+        <div className="relative">
+          <input
+            type={showConfirmPw ? "text" : "password"}
+            required
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            className="auth-input pr-10"
+            placeholder="Re-enter password"
+            autoComplete="new-password"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPw((v) => !v)}
+            aria-label={showConfirmPw ? "Hide confirm password" : "Show confirm password"}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showConfirmPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
         {confirm.length > 0 && !passwordsMatch && (
-          <p className="text-xs text-destructive mt-1">Passwords don't match (min 6 chars)</p>
+          <p className="text-xs text-destructive mt-1">
+            {password.length < 8 ? "Password too short" : "Passwords don't match"}
+          </p>
         )}
       </Field>
 
