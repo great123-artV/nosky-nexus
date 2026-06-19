@@ -163,6 +163,12 @@ export function CipherAssistant() {
       const trimmed = text.trim();
       if (!trimmed) return;
 
+      // Pause the mic while we process & speak so it doesn't capture Cipher's
+      // own voice. The voice-mode loop will resume listening after TTS ends.
+      if (voiceModeRef.current) {
+        stopListening();
+      }
+
       const userMessage: Message = {
         role: "user",
         content: trimmed,
@@ -183,12 +189,24 @@ export function CipherAssistant() {
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, errorMessage]);
-        handleSpeak(errorMessage.content);
+        handleSpeak(errorMessage.content, () => {
+          if (voiceModeRef.current) {
+            setTimeout(() => {
+              if (voiceModeRef.current) {
+                try {
+                  startListening();
+                } catch {
+                  /* noop */
+                }
+              }
+            }, 250);
+          }
+        });
       } finally {
         setIsLoading(false);
       }
     },
-    [handleIntent, handleSpeak],
+    [handleIntent, handleSpeak, stopListening, startListening],
   );
 
   useEffect(() => {
