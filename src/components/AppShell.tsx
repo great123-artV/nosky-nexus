@@ -77,13 +77,13 @@ export function AppShell({
   }, []);
 
   useEffect(() => {
-    if (deferredPrompt && user && !pwaDismissed && !showInstallBanner) {
+    if (deferredPrompt && user && !pwaDismissed && !showInstallBanner && pathname === "/") {
       const timer = setTimeout(() => {
         setShowInstallBanner(true);
       }, 30000); // 30 seconds delay
       return () => clearTimeout(timer);
     }
-  }, [deferredPrompt, user, pwaDismissed, showInstallBanner]);
+  }, [deferredPrompt, user, pwaDismissed, showInstallBanner, pathname]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
