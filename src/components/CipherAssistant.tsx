@@ -1,22 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Mic,
-  MicOff,
-  X,
-  MessageSquare,
-  Send,
-  Volume2,
-  Sparkles,
-  Loader2,
-  Power,
-  AlertTriangle,
-} from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Mic, MicOff, X, Send, Volume2, Sparkles, Loader2, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { useDeviceStore } from "@/hooks/useDeviceStore";
 import { useSettingsStore } from "@/hooks/useSettingsStore";
-import { processUserCommand, CipherIntent, isGeminiConfigured } from "@/lib/gemini.service";
+import { processUserCommand, CipherIntent } from "@/lib/gemini.service";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
@@ -32,6 +21,17 @@ export function CipherAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const voiceModeRef = useRef(false);
+  useEffect(() => {
+    voiceModeRef.current = voiceMode;
+  }, [voiceMode]);
+
+  const { speak, cancel: cancelSpeak } = useSpeechSynthesis();
+  const { devices, zones, setPowerState } = useDeviceStore();
+
+  // Forward ref for handleCommand so the speech callback can call it.
+  const handleCommandRef = useRef<(text: string) => Promise<void>>(async () => {});
 
   const {
     isListening,
@@ -39,22 +39,32 @@ export function CipherAssistant() {
     startListening,
     stopListening,
     browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  } = useSpeechRecognition({
+    continuous: voiceMode,
+    onFinalTranscript: (text) => {
+      handleCommandRef.current(text);
+    },
+  });
 
-  const { speak } = useSpeechSynthesis();
-  const { devices, zones, setPowerState } = useDeviceStore();
-
-  const handleSpeak = (text: string) => {
-    if (!cipherEnabled) return;
-    speak(text, {
-      volume: cipherVolume,
-      rate: cipherSpeed,
-      voiceId: cipherVoiceId || undefined,
-    });
-  };
+  const handleSpeak = useCallback(
+    (text: string, onEnd?: () => void) => {
+      if (!cipherEnabled) {
+        onEnd?.();
+        return;
+      }
+      speak(text, {
+        volume: cipherVolume,
+        rate: cipherSpeed,
+        voiceId: cipherVoiceId || undefined,
+        onEnd,
+      });
+    },
+    [cipherEnabled, cipherVolume, cipherSpeed, cipherVoiceId, speak],
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const configured = isGeminiConfigured();
+  
+
 
   // Load history from localStorage
   useEffect(() => {
@@ -82,99 +92,121 @@ export function CipherAssistant() {
     }
   }, [messages, isLoading]);
 
-  const handleCommand = async (text: string) => {
-    if (!text.trim()) return;
+  const handleIntent = useCallback(
+    (result: CipherIntent) => {
+      let finalResponse = result.response;
 
-    const userMessage: Message = {
-      role: "user",
-      content: text,
-      timestamp: Date.now(),
-    };
+      if (result.intent === "device_control" && result.device && result.action) {
+        const targetZone = zones.find(
+          (z) => z.name.toLowerCase() === result.zone?.toLowerCase(),
+        );
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
-    setIsLoading(true);
+        let targetDevice;
+        if (targetZone) {
+          targetDevice = devices.find(
+            (d) =>
+              d.zoneId === targetZone.id &&
+              d.name.toLowerCase() === result.device?.toLowerCase(),
+          );
+        } else {
+          const matchingDevices = devices.filter(
+            (d) => d.name.toLowerCase() === result.device?.toLowerCase(),
+          );
+          if (matchingDevices.length === 1) {
+            targetDevice = matchingDevices[0];
+          } else if (matchingDevices.length > 1) {
+            finalResponse = `I found multiple devices named ${result.device}. Which room — Parlor, Master Bedroom, Children's Room, or Store Room?`;
+          }
+        }
 
-    try {
-      const result = await processUserCommand(text);
-      handleIntent(result);
-    } catch (error) {
-      console.error("Command processing failed", error);
-      const errorMessage: Message = {
+        if (targetDevice) {
+          const isComingSoon = ["AC", "Fan", "Inverter"].includes(targetDevice.type);
+          if (isComingSoon) {
+            finalResponse = `${targetDevice.type} control is coming soon to Nosky HomeOS.`;
+          } else {
+            setPowerState(targetDevice.id, result.action);
+            toast.success(finalResponse);
+          }
+        } else if (!finalResponse.includes("Which room")) {
+          finalResponse = `I couldn't find ${result.device}${result.zone ? ` in the ${result.zone}` : ""}. Please specify the room and device.`;
+        }
+      }
+
+      const assistantMessage: Message = {
         role: "assistant",
-        content: "I'm sorry, I encountered an error. Please try again.",
+        content: finalResponse,
         timestamp: Date.now(),
       };
-      setMessages((prev) => [...prev, errorMessage]);
-      handleSpeak(errorMessage.content);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      setMessages((prev) => [...prev, assistantMessage]);
 
-  const handleIntent = (result: CipherIntent) => {
-    let finalResponse = result.response;
-
-    if (result.intent === "device_control" && result.device && result.action) {
-      // Find the device
-      const targetZone = zones.find((z) => z.name.toLowerCase() === result.zone?.toLowerCase());
-
-      let targetDevice;
-      if (targetZone) {
-        targetDevice = devices.find(
-          (d) =>
-            d.zoneId === targetZone.id && d.name.toLowerCase() === result.device?.toLowerCase(),
-        );
-      } else {
-        // Search globally if zone is not specified or not found
-        const matchingDevices = devices.filter(
-          (d) => d.name.toLowerCase() === result.device?.toLowerCase(),
-        );
-        if (matchingDevices.length === 1) {
-          targetDevice = matchingDevices[0];
-        } else if (matchingDevices.length > 1) {
-          // Ambiguous
-          finalResponse = `I found multiple devices named ${result.device}. Which room are you referring to? Parlor, Master Bedroom, Children's Room, or Store Room?`;
+      handleSpeak(finalResponse, () => {
+        // In voice mode, resume listening after Cipher finishes speaking.
+        if (voiceModeRef.current && !isListening) {
+          try {
+            startListening();
+          } catch {
+            /* noop */
+          }
         }
+      });
+    },
+    [devices, zones, setPowerState, handleSpeak, isListening, startListening],
+  );
+
+  const handleCommand = useCallback(
+    async (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      const userMessage: Message = {
+        role: "user",
+        content: trimmed,
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      setInputValue("");
+      setIsLoading(true);
+
+      try {
+        const result = await processUserCommand(trimmed);
+        handleIntent(result);
+      } catch (error) {
+        console.error("Command processing failed", error);
+        const errorMessage: Message = {
+          role: "assistant",
+          content: "I'm sorry, I encountered an error. Please try again.",
+          timestamp: Date.now(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        handleSpeak(errorMessage.content);
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [handleIntent, handleSpeak],
+  );
 
-      if (targetDevice) {
-        // Check for "Coming Soon" devices
-        const isComingSoon = ["AC", "Fan", "Inverter"].includes(targetDevice.type);
-        if (isComingSoon) {
-          finalResponse = `${targetDevice.type} control is currently unavailable and will be available in a future Nosky HomeOS update.`;
-        } else {
-          setPowerState(targetDevice.id, result.action);
-          toast.success(finalResponse);
-        }
-      } else if (
-        result.intent === "device_control" &&
-        !targetDevice &&
-        !finalResponse.includes("Which room")
-      ) {
-        finalResponse = `I couldn't find the ${result.device}${result.zone ? ` in the ${result.zone}` : ""}. Could you please specify the room and device name correctly?`;
-      }
-    }
-
-    const assistantMessage: Message = {
-      role: "assistant",
-      content: finalResponse,
-      timestamp: Date.now(),
-    };
-
-    setMessages((prev) => [...prev, assistantMessage]);
-    handleSpeak(finalResponse);
-  };
+  useEffect(() => {
+    handleCommandRef.current = handleCommand;
+  }, [handleCommand]);
 
   const handleMicClick = () => {
-    if (!configured) return;
     if (isListening) {
       stopListening();
-      if (transcript) {
-        handleCommand(transcript);
-      }
     } else {
       startListening();
+    }
+  };
+
+  const toggleVoiceMode = () => {
+    if (voiceMode) {
+      setVoiceMode(false);
+      stopListening();
+      cancelSpeak();
+    } else {
+      setVoiceMode(true);
+      // Start listening on next tick so the continuous flag is applied.
+      setTimeout(() => startListening(), 50);
     }
   };
 
@@ -182,6 +214,8 @@ export function CipherAssistant() {
     e.preventDefault();
     handleCommand(inputValue);
   };
+
+
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
@@ -197,9 +231,9 @@ export function CipherAssistant() {
               <div>
                 <h3 className="font-display font-semibold text-sm flex items-center gap-1.5">
                   Cipher AI
-                  {!configured && (
-                    <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-muted-foreground font-mono">
-                      Mock
+                  {voiceMode && (
+                    <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono uppercase tracking-wider">
+                      Live
                     </span>
                   )}
                 </h3>
@@ -208,27 +242,30 @@ export function CipherAssistant() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
-            >
-              <X className="h-4 w-4 text-muted-foreground" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={toggleVoiceMode}
+                disabled={!browserSupportsSpeechRecognition}
+                title={voiceMode ? "End voice conversation" : "Start voice conversation"}
+                className={cn(
+                  "h-8 w-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30",
+                  voiceMode
+                    ? "bg-emerald-500/20 text-emerald-300 animate-pulse"
+                    : "hover:bg-white/10 text-muted-foreground",
+                )}
+              >
+                <Radio className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
           </div>
 
-          {/* Fallback Banner */}
-          {!configured && (
-            <div className="mx-4 mt-4 p-3 bg-primary/10 border border-primary/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-              <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-              <div>
-                <p className="text-xs font-bold text-primary">Mock Mode Active</p>
-                <p className="text-[10px] text-primary/80 leading-tight mt-0.5">
-                  Using local command processing. To enable full AI features, configure
-                  VITE_GEMINI_API_KEY.
-                </p>
-              </div>
-            </div>
-          )}
+
 
           {/* Chat Content */}
           <ScrollArea className="flex-1 p-4">
