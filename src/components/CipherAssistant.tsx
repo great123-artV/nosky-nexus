@@ -33,7 +33,7 @@ export function CipherAssistant() {
     stopListening,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition({
-    continuous: true,
+    continuous: false,
     onFinalTranscript: (text) => {
       handleCommandRef.current(text);
     },
@@ -143,6 +143,7 @@ export function CipherAssistant() {
       }
 
       setStatus("processing");
+      toast.info(`Cipher: "${trimmed}"`, { duration: 2000 });
 
       try {
         const result = await processUserCommand(trimmed);
@@ -178,12 +179,25 @@ export function CipherAssistant() {
     if (voiceMode) {
       endSession();
     } else {
+      // Cancel any ongoing speech first
+      cancelSpeak();
+
       setVoiceMode(true);
       setShowStatusCard(true);
       setStatus("ready");
+
       handleSpeak("Listening.", () => {
         setStatus("listening");
-        setTimeout(() => startListening(), 50);
+        // Use a slightly longer timeout to ensure speech synthesis is fully released
+        setTimeout(() => {
+          if (voiceModeRef.current) {
+            try {
+              startListening();
+            } catch (e) {
+              console.error("Manual start failed", e);
+            }
+          }
+        }, 150);
       });
     }
   };
