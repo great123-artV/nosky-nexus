@@ -69,6 +69,12 @@ export function AppShell({
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
+    // If the event was already captured (e.g. in a global variable), use it
+    const win = window as any;
+    if (win.deferredPrompt) {
+      setDeferredPrompt(win.deferredPrompt);
+    }
+
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
@@ -80,7 +86,7 @@ export function AppShell({
     if (deferredPrompt && user && !pwaDismissed && !showInstallBanner && pathname === "/") {
       const timer = setTimeout(() => {
         setShowInstallBanner(true);
-      }, 30000); // 30 seconds delay
+      }, 5000); // Reduced delay for better discoverability
       return () => clearTimeout(timer);
     }
   }, [deferredPrompt, user, pwaDismissed, showInstallBanner, pathname]);
