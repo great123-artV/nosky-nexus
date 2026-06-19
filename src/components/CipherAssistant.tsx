@@ -63,7 +63,7 @@ export function CipherAssistant() {
   );
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const configured = isGeminiConfigured();
+  void isGeminiConfigured;
 
 
   // Load history from localStorage
