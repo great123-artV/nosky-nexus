@@ -92,99 +92,121 @@ export function CipherAssistant() {
     }
   }, [messages, isLoading]);
 
-  const handleCommand = async (text: string) => {
-    if (!text.trim()) return;
+  const handleIntent = useCallback(
+    (result: CipherIntent) => {
+      let finalResponse = result.response;
 
-    const userMessage: Message = {
-      role: "user",
-      content: text,
-      timestamp: Date.now(),
-    };
+      if (result.intent === "device_control" && result.device && result.action) {
+        const targetZone = zones.find(
+          (z) => z.name.toLowerCase() === result.zone?.toLowerCase(),
+        );
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
-    setIsLoading(true);
+        let targetDevice;
+        if (targetZone) {
+          targetDevice = devices.find(
+            (d) =>
+              d.zoneId === targetZone.id &&
+              d.name.toLowerCase() === result.device?.toLowerCase(),
+          );
+        } else {
+          const matchingDevices = devices.filter(
+            (d) => d.name.toLowerCase() === result.device?.toLowerCase(),
+          );
+          if (matchingDevices.length === 1) {
+            targetDevice = matchingDevices[0];
+          } else if (matchingDevices.length > 1) {
+            finalResponse = `I found multiple devices named ${result.device}. Which room — Parlor, Master Bedroom, Children's Room, or Store Room?`;
+          }
+        }
 
-    try {
-      const result = await processUserCommand(text);
-      handleIntent(result);
-    } catch (error) {
-      console.error("Command processing failed", error);
-      const errorMessage: Message = {
+        if (targetDevice) {
+          const isComingSoon = ["AC", "Fan", "Inverter"].includes(targetDevice.type);
+          if (isComingSoon) {
+            finalResponse = `${targetDevice.type} control is coming soon to Nosky HomeOS.`;
+          } else {
+            setPowerState(targetDevice.id, result.action);
+            toast.success(finalResponse);
+          }
+        } else if (!finalResponse.includes("Which room")) {
+          finalResponse = `I couldn't find ${result.device}${result.zone ? ` in the ${result.zone}` : ""}. Please specify the room and device.`;
+        }
+      }
+
+      const assistantMessage: Message = {
         role: "assistant",
-        content: "I'm sorry, I encountered an error. Please try again.",
+        content: finalResponse,
         timestamp: Date.now(),
       };
-      setMessages((prev) => [...prev, errorMessage]);
-      handleSpeak(errorMessage.content);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      setMessages((prev) => [...prev, assistantMessage]);
 
-  const handleIntent = (result: CipherIntent) => {
-    let finalResponse = result.response;
-
-    if (result.intent === "device_control" && result.device && result.action) {
-      // Find the device
-      const targetZone = zones.find((z) => z.name.toLowerCase() === result.zone?.toLowerCase());
-
-      let targetDevice;
-      if (targetZone) {
-        targetDevice = devices.find(
-          (d) =>
-            d.zoneId === targetZone.id && d.name.toLowerCase() === result.device?.toLowerCase(),
-        );
-      } else {
-        // Search globally if zone is not specified or not found
-        const matchingDevices = devices.filter(
-          (d) => d.name.toLowerCase() === result.device?.toLowerCase(),
-        );
-        if (matchingDevices.length === 1) {
-          targetDevice = matchingDevices[0];
-        } else if (matchingDevices.length > 1) {
-          // Ambiguous
-          finalResponse = `I found multiple devices named ${result.device}. Which room are you referring to? Parlor, Master Bedroom, Children's Room, or Store Room?`;
+      handleSpeak(finalResponse, () => {
+        // In voice mode, resume listening after Cipher finishes speaking.
+        if (voiceModeRef.current && !isListening) {
+          try {
+            startListening();
+          } catch {
+            /* noop */
+          }
         }
+      });
+    },
+    [devices, zones, setPowerState, handleSpeak, isListening, startListening],
+  );
+
+  const handleCommand = useCallback(
+    async (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      const userMessage: Message = {
+        role: "user",
+        content: trimmed,
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      setInputValue("");
+      setIsLoading(true);
+
+      try {
+        const result = await processUserCommand(trimmed);
+        handleIntent(result);
+      } catch (error) {
+        console.error("Command processing failed", error);
+        const errorMessage: Message = {
+          role: "assistant",
+          content: "I'm sorry, I encountered an error. Please try again.",
+          timestamp: Date.now(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        handleSpeak(errorMessage.content);
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [handleIntent, handleSpeak],
+  );
 
-      if (targetDevice) {
-        // Check for "Coming Soon" devices
-        const isComingSoon = ["AC", "Fan", "Inverter"].includes(targetDevice.type);
-        if (isComingSoon) {
-          finalResponse = `${targetDevice.type} control is currently unavailable and will be available in a future Nosky HomeOS update.`;
-        } else {
-          setPowerState(targetDevice.id, result.action);
-          toast.success(finalResponse);
-        }
-      } else if (
-        result.intent === "device_control" &&
-        !targetDevice &&
-        !finalResponse.includes("Which room")
-      ) {
-        finalResponse = `I couldn't find the ${result.device}${result.zone ? ` in the ${result.zone}` : ""}. Could you please specify the room and device name correctly?`;
-      }
-    }
-
-    const assistantMessage: Message = {
-      role: "assistant",
-      content: finalResponse,
-      timestamp: Date.now(),
-    };
-
-    setMessages((prev) => [...prev, assistantMessage]);
-    handleSpeak(finalResponse);
-  };
+  useEffect(() => {
+    handleCommandRef.current = handleCommand;
+  }, [handleCommand]);
 
   const handleMicClick = () => {
-    if (!configured) return;
     if (isListening) {
       stopListening();
-      if (transcript) {
-        handleCommand(transcript);
-      }
     } else {
       startListening();
+    }
+  };
+
+  const toggleVoiceMode = () => {
+    if (voiceMode) {
+      setVoiceMode(false);
+      stopListening();
+      cancelSpeak();
+    } else {
+      setVoiceMode(true);
+      // Start listening on next tick so the continuous flag is applied.
+      setTimeout(() => startListening(), 50);
     }
   };
 
@@ -192,6 +214,8 @@ export function CipherAssistant() {
     e.preventDefault();
     handleCommand(inputValue);
   };
+
+
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
