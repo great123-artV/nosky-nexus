@@ -5,7 +5,7 @@ import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { useDeviceStore } from "@/hooks/useDeviceStore";
 import { useSettingsStore } from "@/hooks/useSettingsStore";
-import { processUserCommand, CipherIntent, isGeminiConfigured } from "@/lib/gemini.service";
+import { processUserCommand, CipherIntent } from "@/lib/gemini.service";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
@@ -63,7 +63,7 @@ export function CipherAssistant() {
   );
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  void isGeminiConfigured;
+  
 
 
   // Load history from localStorage
