@@ -16,6 +16,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SplashScreen } from "@/components/SplashScreen";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { useSettingsStore } from "@/hooks/useSettingsStore";
 
 function NotFoundComponent() {
   return (
@@ -169,6 +170,7 @@ function AuthGate({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [showSplash, setShowSplash] = useState(true);
+  const { setPwaInstallable } = useSettingsStore();
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -178,7 +180,19 @@ function RootComponent() {
         });
       });
     }
-  }, []);
+
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      (window as any).deferredPrompt = e;
+      setPwaInstallable(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, [setPwaInstallable]);
 
   return (
     <QueryClientProvider client={queryClient}>

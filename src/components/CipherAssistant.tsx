@@ -201,13 +201,13 @@ export function CipherAssistant() {
 
   return (
     <>
-      <div className="fixed bottom-6 left-6 z-50 flex items-center gap-4">
+      <div className="fixed bottom-6 right-6 z-50 flex flex-row-reverse items-center gap-4">
         {/* Floating AI Button */}
         <button
           onClick={toggleVoiceMode}
           disabled={!browserSupportsSpeechRecognition}
           className={cn(
-            "h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl relative overflow-hidden group",
+            "h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl relative overflow-hidden group shrink-0",
             voiceMode
               ? "bg-white/10 text-white border border-white/20"
               : "bg-primary text-primary-foreground glow-primary hover:scale-105",
@@ -268,7 +268,7 @@ export function CipherAssistant() {
 
         {/* Status Card */}
         {showStatusCard && (
-          <div className="glass-strong p-4 rounded-2xl border border-white/10 shadow-2xl min-w-[180px] animate-in fade-in slide-in-from-left-4 duration-300 relative group">
+          <div className="glass-strong p-4 rounded-2xl border border-white/10 shadow-2xl min-w-[180px] animate-in fade-in slide-in-from-right-4 duration-300 relative group">
             <button
               onClick={() => setShowStatusCard(false)}
               className="absolute top-2 right-2 text-muted-foreground hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
