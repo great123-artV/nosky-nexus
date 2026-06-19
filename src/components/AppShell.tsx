@@ -10,28 +10,15 @@ import {
   LogOut,
   X,
   LucideIcon,
-  WifiOff,
-  Download,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useSettingsStore } from "@/hooks/useSettingsStore";
 import { CipherAssistant } from "./CipherAssistant";
-import { cn } from "@/lib/utils";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/zones", label: "Zones", icon: Home },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
-
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{
-    outcome: "accepted" | "dismissed";
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
-}
 
 export function AppShell({
   title,
@@ -44,67 +31,11 @@ export function AppShell({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const { profile, user, signOut } = useAuth();
-  const { pwaDismissed, setPwaDismissed } = useSettingsStore();
+  const { profile, signOut } = useAuth();
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [isOffline, setIsOffline] = useState(!navigator.onLine);
-
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    // If the event was already captured (e.g. in a global variable), use it
-    const win = window as any;
-    if (win.deferredPrompt) {
-      setDeferredPrompt(win.deferredPrompt);
-    }
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (deferredPrompt && user && !pwaDismissed && !showInstallBanner && pathname === "/") {
-      const timer = setTimeout(() => {
-        setShowInstallBanner(true);
-      }, 5000); // Reduced delay for better discoverability
-      return () => clearTimeout(timer);
-    }
-  }, [deferredPrompt, user, pwaDismissed, showInstallBanner, pathname]);
-
-  const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      setDeferredPrompt(null);
-      setShowInstallBanner(false);
-    }
-  };
-
-  const handleDismissInstall = () => {
-    setShowInstallBanner(false);
-    setPwaDismissed(true);
-  };
 
   const initials =
     profile?.full_name
@@ -134,44 +65,6 @@ export function AppShell({
 
   return (
     <div className="min-h-screen flex w-full flex-col">
-      {/* Offline Banner */}
-      {isOffline && (
-        <div className="bg-destructive text-destructive-foreground py-2 px-4 text-center text-xs font-bold flex items-center justify-center gap-2 animate-in slide-in-from-top duration-300 z-[100]">
-          <WifiOff className="h-3 w-3" />⚠ Offline Mode — Some features may be unavailable.
-        </div>
-      )}
-
-      {/* PWA Install Banner */}
-      {showInstallBanner && (
-        <div className="fixed bottom-24 md:bottom-8 left-4 right-4 md:left-auto md:right-8 md:w-80 glass-strong rounded-2xl p-4 shadow-2xl border border-primary/20 z-[60] animate-in slide-in-from-bottom-8 duration-500">
-          <div className="flex items-start gap-4">
-            <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-              <Download className="h-5 w-5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="font-display font-bold text-sm">Install Nosky HomeOS</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Experience smart living as a native app on your device.
-              </p>
-              <div className="flex gap-2 mt-3">
-                <button
-                  onClick={handleInstall}
-                  className="flex-1 bg-primary text-primary-foreground py-2 rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors glow-primary"
-                >
-                  Install App
-                </button>
-                <button
-                  onClick={handleDismissInstall}
-                  className="px-3 py-2 rounded-lg text-xs font-medium hover:bg-white/5 transition-colors"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-1 w-full overflow-hidden">
         <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-sidebar/80 backdrop-blur-xl">
           <Link
