@@ -1,16 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Mic,
-  MicOff,
-  X,
-  MessageSquare,
-  Send,
-  Volume2,
-  Sparkles,
-  Loader2,
-  Power,
-  AlertTriangle,
-} from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Mic, MicOff, X, Send, Volume2, Sparkles, Loader2, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
