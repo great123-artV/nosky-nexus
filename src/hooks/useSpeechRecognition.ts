@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 interface UseSpeechRecognitionOptions {
   continuous?: boolean;
   onFinalTranscript?: (text: string) => void;
+  lang?: string;
 }
 
 interface UseSpeechRecognitionReturn {
@@ -14,39 +15,13 @@ interface UseSpeechRecognitionReturn {
   browserSupportsSpeechRecognition: boolean;
 }
 
-interface SRResultAlt {
-  transcript: string;
-}
-interface SRResult {
-  0: SRResultAlt;
-  isFinal: boolean;
-}
-interface SREvent {
-  results: ArrayLike<SRResult> & Iterable<SRResult>;
-  resultIndex: number;
-}
-interface SRErrorEvent {
-  error: string;
-}
-interface SRInstance {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: (event: SREvent) => void;
-  onend: () => void;
-  onerror: (event: SRErrorEvent) => void;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-}
-
 export function useSpeechRecognition(
   options: UseSpeechRecognitionOptions = {},
 ): UseSpeechRecognitionReturn {
-  const { continuous = false, onFinalTranscript } = options;
+  const { continuous = false, onFinalTranscript, lang = "en-US" } = options;
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const recognitionRef = useRef<SRInstance | null>(null);
+  const recognitionRef = useRef<any | null>(null);
   const finalTextRef = useRef("");
   const shouldKeepListeningRef = useRef(false);
   const callbackRef = useRef(onFinalTranscript);
@@ -56,93 +31,106 @@ export function useSpeechRecognition(
   }, [onFinalTranscript]);
 
   useEffect(() => {
-    const GlobalWindow = window as unknown as {
-      SpeechRecognition?: new () => SRInstance;
-      webkitSpeechRecognition?: new () => SRInstance;
-    };
-    const Ctor = GlobalWindow.SpeechRecognition || GlobalWindow.webkitSpeechRecognition;
-    if (!Ctor) return;
+    const GlobalWindow = window as any;
+    const SpeechRecognition = GlobalWindow.SpeechRecognition || GlobalWindow.webkitSpeechRecognition;
 
-    const rec = new Ctor();
-    rec.continuous = continuous;
-    rec.interimResults = true;
-    rec.lang = "en-US";
+    if (!SpeechRecognition) return;
 
-    rec.onresult = (event) => {
-      let interim = "";
+    const recognition = new SpeechRecognition();
+    recognition.continuous = continuous;
+    recognition.interimResults = true;
+    recognition.lang = lang;
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = "";
       let finalChunk = "";
-      for (let i = event.resultIndex; i < (event.results as unknown as { length: number }).length; i++) {
-        const result = (event.results as unknown as SRResult[])[i];
-        const text = result[0].transcript;
-        if (result.isFinal) {
-          finalChunk += text;
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalChunk += event.results[i][0].transcript;
         } else {
-          interim += text;
+          interimTranscript += event.results[i][0].transcript;
         }
       }
+
       if (finalChunk) {
         finalTextRef.current = (finalTextRef.current + " " + finalChunk).trim();
+
+        // If in continuous mode, we might want to emit chunks early?
+        // No, usually in continuous mode we wait for a pause.
+        // But for "unobstructed" feel, we want it to respond as soon as a thought is finished.
       }
-      setTranscript((finalTextRef.current + " " + interim).trim());
+
+      setTranscript((finalTextRef.current + " " + interimTranscript).trim());
     };
 
-    rec.onerror = (event) => {
-      if (event.error !== "no-speech" && event.error !== "aborted") {
-        console.error("Speech recognition error", event.error);
-      }
-    };
-
-    rec.onend = () => {
-      const finalText = finalTextRef.current.trim();
-      finalTextRef.current = "";
-      if (finalText && callbackRef.current) {
-        callbackRef.current(finalText);
-      }
-      if (shouldKeepListeningRef.current) {
-        try {
-          rec.start();
-          setIsListening(true);
-          return;
-        } catch {
-          /* ignore */
-        }
+    recognition.onerror = (event: any) => {
+      if (event.error === "not-allowed") {
+        console.error("Speech recognition permission denied");
+      } else if (event.error !== "no-speech" && event.error !== "aborted") {
+        console.error("Speech recognition error:", event.error);
       }
       setIsListening(false);
     };
 
-    recognitionRef.current = rec;
+    recognition.onend = () => {
+      const finalText = finalTextRef.current.trim();
+
+      if (finalText && callbackRef.current) {
+        callbackRef.current(finalText);
+      }
+
+      finalTextRef.current = "";
+
+      if (shouldKeepListeningRef.current) {
+        try {
+          recognition.start();
+          setIsListening(true);
+        } catch (e) {
+          console.error("Failed to restart speech recognition:", e);
+          setIsListening(false);
+        }
+      } else {
+        setIsListening(false);
+      }
+    };
+
+    recognitionRef.current = recognition;
+
     return () => {
       shouldKeepListeningRef.current = false;
       try {
-        rec.abort();
-      } catch {
-        /* ignore */
+        recognition.abort();
+      } catch (e) {
+        // ignore
       }
     };
-  }, [continuous]);
+  }, [continuous, lang]);
 
   const startListening = useCallback(() => {
-    const rec = recognitionRef.current;
-    if (!rec) return;
+    if (!recognitionRef.current) return;
+
     finalTextRef.current = "";
     setTranscript("");
     shouldKeepListeningRef.current = continuous;
+
     try {
-      rec.start();
+      recognitionRef.current.start();
       setIsListening(true);
     } catch (e) {
-      console.error("Failed to start speech recognition", e);
+      // If already started, this might throw, we can ignore
+      console.warn("Recognition already started or failed to start:", e);
     }
   }, [continuous]);
 
   const stopListening = useCallback(() => {
-    const rec = recognitionRef.current;
-    if (!rec) return;
     shouldKeepListeningRef.current = false;
-    try {
-      rec.stop();
-    } catch {
-      /* ignore */
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // ignore
+      }
     }
     setIsListening(false);
   }, []);
@@ -158,6 +146,6 @@ export function useSpeechRecognition(
     startListening,
     stopListening,
     resetTranscript,
-    browserSupportsSpeechRecognition: !!recognitionRef.current,
+    browserSupportsSpeechRecognition: !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition,
   };
 }
