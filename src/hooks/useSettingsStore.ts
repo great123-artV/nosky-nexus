@@ -9,6 +9,7 @@ interface SettingsState {
   cipherVoiceId: string | null;
   pwaDismissed: boolean;
   pwaInstallable: boolean;
+  isPwaInstalled: boolean;
 
   setCipherEnabled: (enabled: boolean) => void;
   setCipherVoiceGreeting: (enabled: boolean) => void;
@@ -17,6 +18,7 @@ interface SettingsState {
   setCipherVoiceId: (voiceId: string | null) => void;
   setPwaDismissed: (dismissed: boolean) => void;
   setPwaInstallable: (installable: boolean) => void;
+  setIsPwaInstalled: (installed: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -29,6 +31,7 @@ export const useSettingsStore = create<SettingsState>()(
       cipherVoiceId: null,
       pwaDismissed: false,
       pwaInstallable: false,
+      isPwaInstalled: false,
 
       setCipherEnabled: (cipherEnabled) => set({ cipherEnabled }),
       setCipherVoiceGreeting: (cipherVoiceGreeting) => set({ cipherVoiceGreeting }),
@@ -37,6 +40,7 @@ export const useSettingsStore = create<SettingsState>()(
       setCipherVoiceId: (cipherVoiceId) => set({ cipherVoiceId }),
       setPwaDismissed: (pwaDismissed) => set({ pwaDismissed }),
       setPwaInstallable: (pwaInstallable) => set({ pwaInstallable }),
+      setIsPwaInstalled: (isPwaInstalled) => set({ isPwaInstalled }),
     }),
     {
       name: "nosky-settings-storage",

@@ -64,7 +64,7 @@ const groups = [
 
 function SettingsHub() {
   const { profile } = useAuth();
-  const { pwaInstallable, setPwaInstallable } = useSettingsStore();
+  const { pwaInstallable, setPwaInstallable, isPwaInstalled } = useSettingsStore();
 
   const handleManualInstall = async () => {
     const win = window as any;
@@ -81,24 +81,44 @@ function SettingsHub() {
   return (
     <AppShell title="Settings" subtitle="Personalize your Nosky HomeOS experience">
       <div className="max-w-3xl mx-auto space-y-6">
-        {/* PWA Manual Install */}
-        {pwaInstallable && (
-          <button
-            onClick={handleManualInstall}
-            className="w-full glass-strong rounded-2xl p-5 flex items-center gap-4 hover:border-primary/40 transition-all group text-left"
+        {/* PWA Manual Install Section */}
+        <div className="glass-strong rounded-2xl p-5 flex items-center gap-4 border border-primary/10">
+          <div
+            className={`h-12 w-12 rounded-xl grid place-items-center shrink-0 transition-colors ${
+              isPwaInstalled ? "bg-success/20 text-success" : "bg-primary/20 text-primary"
+            }`}
           >
-            <div className="h-12 w-12 rounded-xl bg-primary/20 text-primary grid place-items-center shrink-0">
-              <Download className="h-6 w-6" />
+            <Download className="h-6 w-6" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-display font-bold text-sm">
+              {isPwaInstalled ? "Nosky HomeOS Installed" : "Install Nosky HomeOS"}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-display font-bold text-sm">Install Nosky HomeOS</div>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Add to your home screen for the best experience.
-              </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {isPwaInstalled
+                ? "You're using the native app experience."
+                : "Add to your home screen for the best experience."}
+            </p>
+          </div>
+          {pwaInstallable && !isPwaInstalled && (
+            <button
+              onClick={handleManualInstall}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors glow-primary"
+            >
+              Install
+            </button>
+          )}
+          {isPwaInstalled && (
+            <div className="px-3 py-1 bg-success/10 text-success rounded-full text-[10px] font-bold uppercase tracking-wider">
+              Active
             </div>
-            <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-          </button>
-        )}
+          )}
+          {!pwaInstallable && !isPwaInstalled && (
+            <div className="text-[10px] text-muted-foreground italic">
+              Use Chrome on Android to install
+            </div>
+          )}
+        </div>
 
         {profile && (
           <Link

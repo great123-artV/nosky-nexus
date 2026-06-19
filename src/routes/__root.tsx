@@ -15,6 +15,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SplashScreen } from "@/components/SplashScreen";
+import { GlobalOverlays } from "@/components/GlobalOverlays";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useSettingsStore } from "@/hooks/useSettingsStore";
 
@@ -170,9 +171,19 @@ function AuthGate({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [showSplash, setShowSplash] = useState(true);
-  const { setPwaInstallable } = useSettingsStore();
+  const { setPwaInstallable, setIsPwaInstalled } = useSettingsStore();
 
   useEffect(() => {
+    // Check if app is already installed/running in standalone mode
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone ||
+      document.referrer.includes("android-app://");
+
+    if (isStandalone) {
+      setIsPwaInstalled(true);
+    }
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/sw.js").catch((err) => {
@@ -182,17 +193,28 @@ function RootComponent() {
     }
 
     const handleBeforeInstallPrompt = (e: any) => {
+      console.log("beforeinstallprompt fired");
       e.preventDefault();
       (window as any).deferredPrompt = e;
       setPwaInstallable(true);
+      setIsPwaInstalled(false);
+    };
+
+    const handleAppInstalled = () => {
+      console.log("appinstalled fired");
+      (window as any).deferredPrompt = null;
+      setPwaInstallable(false);
+      setIsPwaInstalled(true);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [setPwaInstallable]);
+  }, [setPwaInstallable, setIsPwaInstalled]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -200,9 +222,12 @@ function RootComponent() {
         {showSplash ? (
           <SplashScreen onDone={() => setShowSplash(false)} />
         ) : (
-          <AuthGate>
-            <Outlet />
-          </AuthGate>
+          <>
+            <GlobalOverlays />
+            <AuthGate>
+              <Outlet />
+            </AuthGate>
+          </>
         )}
         <Toaster theme="dark" position="top-right" richColors closeButton />
       </AuthProvider>

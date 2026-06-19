@@ -7,6 +7,8 @@
   "display": "standalone",
   "background_color": "#0F172A",
   "theme_color": "#0F172A",
+  "orientation": "portrait",
+  "categories": ["lifestyle", "utilities"],
   "icons": [
     {
       "src": "/icons/icon.svg",
@@ -19,6 +21,19 @@
       "sizes": "72x72 96x96 128x128 144x144 152x152 192x192 384x384 512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f1e1666f-a3a2-44a4-9b08-055d8ede9829/id-preview-5c5ba5e1--f7fd0ad8-5cf6-4956-949b-22deaeea91c3.lovable.app-1781735595395.png",
+      "sizes": "720x1280",
+      "type": "image/png"
     }
   ]
 }
