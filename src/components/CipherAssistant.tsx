@@ -141,16 +141,21 @@ export function CipherAssistant() {
 
       handleSpeak(finalResponse, () => {
         // In voice mode, resume listening after Cipher finishes speaking.
-        if (voiceModeRef.current && !isListening) {
-          try {
-            startListening();
-          } catch {
-            /* noop */
-          }
+        if (voiceModeRef.current) {
+          // Small delay so the mic doesn't catch the tail of the TTS audio.
+          setTimeout(() => {
+            if (voiceModeRef.current) {
+              try {
+                startListening();
+              } catch {
+                /* noop */
+              }
+            }
+          }, 250);
         }
       });
     },
-    [devices, zones, setPowerState, handleSpeak, isListening, startListening],
+    [devices, zones, setPowerState, handleSpeak, startListening],
   );
 
   const handleCommand = useCallback(
