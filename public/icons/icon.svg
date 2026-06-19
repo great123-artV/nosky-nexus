@@ -1,8 +1,39 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="512" height="512" rx="128" fill="#0F172A"/>
-<path d="M256 120L100 240V400H200V300H312V400H412V240L256 120Z" fill="#3B82F6" fill-opacity="0.2"/>
-<path d="M256 120L100 240V400H200V300H312V400H412V240L256 120Z" stroke="#3B82F6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="256" cy="240" r="40" fill="#3B82F6" fill-opacity="0.4"/>
-<circle cx="256" cy="240" r="40" stroke="#3B82F6" stroke-width="8"/>
-<path d="M256 210V270M226 240H286" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="bg_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#020617;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow_grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0" />
+    </radialGradient>
+    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="120" fill="url(#bg_grad)" />
+
+  <!-- Subtle Glow -->
+  <circle cx="256" cy="256" r="200" fill="url(#glow_grad)" filter="url(#blur)" />
+
+  <!-- Premium Glass House Symbol -->
+  <g transform="translate(128, 128) scale(0.5)">
+    <!-- Roof -->
+    <path d="M256 40L40 240H120V440H392V240H472L256 40Z" fill="white" fill-opacity="0.05" />
+    <path d="M256 40L40 240" stroke="#3B82F6" stroke-width="24" stroke-linecap="round" />
+    <path d="M256 40L472 240" stroke="#3B82F6" stroke-width="24" stroke-linecap="round" />
+
+    <!-- Intelligence Symbol (Spark) -->
+    <circle cx="256" cy="280" r="40" fill="#3B82F6" />
+    <circle cx="256" cy="280" r="60" stroke="#3B82F6" stroke-width="4" stroke-dasharray="20 10" />
+
+    <!-- Glass Accents -->
+    <path d="M160 240V400H352V240" stroke="white" stroke-width="8" stroke-opacity="0.1" stroke-linecap="round" />
+  </g>
+
+  <!-- Electric Blue Sparkle Overlay -->
+  <path d="M256 220V250M241 235H271" stroke="#60A5FA" stroke-width="12" stroke-linecap="round" transform="translate(0, -40)" />
 </svg>
