@@ -231,9 +231,9 @@ export function CipherAssistant() {
               <div>
                 <h3 className="font-display font-semibold text-sm flex items-center gap-1.5">
                   Cipher AI
-                  {!configured && (
-                    <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-muted-foreground font-mono">
-                      Mock
+                  {voiceMode && (
+                    <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono uppercase tracking-wider">
+                      Live
                     </span>
                   )}
                 </h3>
@@ -242,27 +242,30 @@ export function CipherAssistant() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
-            >
-              <X className="h-4 w-4 text-muted-foreground" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={toggleVoiceMode}
+                disabled={!browserSupportsSpeechRecognition}
+                title={voiceMode ? "End voice conversation" : "Start voice conversation"}
+                className={cn(
+                  "h-8 w-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30",
+                  voiceMode
+                    ? "bg-emerald-500/20 text-emerald-300 animate-pulse"
+                    : "hover:bg-white/10 text-muted-foreground",
+                )}
+              >
+                <Radio className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
           </div>
 
-          {/* Fallback Banner */}
-          {!configured && (
-            <div className="mx-4 mt-4 p-3 bg-primary/10 border border-primary/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-              <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-              <div>
-                <p className="text-xs font-bold text-primary">Mock Mode Active</p>
-                <p className="text-[10px] text-primary/80 leading-tight mt-0.5">
-                  Using local command processing. To enable full AI features, configure
-                  VITE_GEMINI_API_KEY.
-                </p>
-              </div>
-            </div>
-          )}
+
 
           {/* Chat Content */}
           <ScrollArea className="flex-1 p-4">
