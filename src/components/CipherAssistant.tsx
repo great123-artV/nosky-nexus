@@ -21,6 +21,17 @@ export function CipherAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const voiceModeRef = useRef(false);
+  useEffect(() => {
+    voiceModeRef.current = voiceMode;
+  }, [voiceMode]);
+
+  const { speak, cancel: cancelSpeak } = useSpeechSynthesis();
+  const { devices, zones, setPowerState } = useDeviceStore();
+
+  // Forward ref for handleCommand so the speech callback can call it.
+  const handleCommandRef = useRef<(text: string) => Promise<void>>(async () => {});
 
   const {
     isListening,
@@ -28,22 +39,32 @@ export function CipherAssistant() {
     startListening,
     stopListening,
     browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  } = useSpeechRecognition({
+    continuous: voiceMode,
+    onFinalTranscript: (text) => {
+      handleCommandRef.current(text);
+    },
+  });
 
-  const { speak } = useSpeechSynthesis();
-  const { devices, zones, setPowerState } = useDeviceStore();
-
-  const handleSpeak = (text: string) => {
-    if (!cipherEnabled) return;
-    speak(text, {
-      volume: cipherVolume,
-      rate: cipherSpeed,
-      voiceId: cipherVoiceId || undefined,
-    });
-  };
+  const handleSpeak = useCallback(
+    (text: string, onEnd?: () => void) => {
+      if (!cipherEnabled) {
+        onEnd?.();
+        return;
+      }
+      speak(text, {
+        volume: cipherVolume,
+        rate: cipherSpeed,
+        voiceId: cipherVoiceId || undefined,
+        onEnd,
+      });
+    },
+    [cipherEnabled, cipherVolume, cipherSpeed, cipherVoiceId, speak],
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const configured = isGeminiConfigured();
+
 
   // Load history from localStorage
   useEffect(() => {
