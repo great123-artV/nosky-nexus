@@ -215,7 +215,7 @@ export function CipherAssistant() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50 flex flex-row-reverse items-center gap-4">
+      <div className="fixed left-4 md:left-6 top-1/2 -translate-y-1/2 z-50 flex flex-row items-center gap-4">
         {/* Floating AI Button */}
         <button
           onClick={toggleVoiceMode}
