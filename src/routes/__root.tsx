@@ -92,8 +92,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "HomeOS" },
-      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
-      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/icons/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
+      { rel: "shortcut icon", href: "/favicon.ico" },
+
 
       { property: "og:title", content: "Nosky HomeOS — Smart Living. Seamlessly Connected." },
       {
