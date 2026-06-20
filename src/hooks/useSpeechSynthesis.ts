@@ -10,8 +10,18 @@ interface SpeakOptions {
 }
 
 export function useSpeechSynthesis() {
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   const speak = useCallback((text: string, options?: SpeakOptions) => {
-    if (!window.speechSynthesis) {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
       console.warn("Speech synthesis not supported in this browser.");
       options?.onEnd?.();
       return;
@@ -39,16 +49,25 @@ export function useSpeechSynthesis() {
     utterance.pitch = 1.0;
     utterance.rate = options?.rate ?? 1.0;
     utterance.volume = options?.volume ?? 1.0;
-    if (options?.onEnd) {
-      utterance.onend = () => options.onEnd?.();
-      utterance.onerror = () => options.onEnd?.();
-    }
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      options?.onEnd?.();
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      options?.onEnd?.();
+    };
     window.speechSynthesis.speak(utterance);
   }, []);
 
   const cancel = useCallback(() => {
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
   }, []);
 
-  return { speak, cancel };
+  return { speak, cancel, isSpeaking };
 }
+
