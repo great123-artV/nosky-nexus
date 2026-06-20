@@ -215,7 +215,7 @@ export function CipherAssistant() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50 flex flex-row-reverse items-center gap-4">
+      <div className="fixed left-4 md:left-6 top-1/2 -translate-y-1/2 z-50 flex flex-row items-center gap-4">
         {/* Floating AI Button */}
         <button
           onClick={toggleVoiceMode}
@@ -282,7 +282,7 @@ export function CipherAssistant() {
 
         {/* Status Card */}
         {showStatusCard && (
-          <div className="glass-strong p-4 rounded-2xl border border-white/10 shadow-2xl min-w-[180px] animate-in fade-in slide-in-from-right-4 duration-300 relative group">
+          <div className="glass-strong p-4 rounded-2xl border border-white/10 shadow-2xl min-w-[180px] animate-in fade-in slide-in-from-left-4 duration-300 relative group">
             <button
               onClick={() => setShowStatusCard(false)}
               className="absolute top-2 right-2 text-muted-foreground hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
@@ -292,6 +292,7 @@ export function CipherAssistant() {
             <div className="space-y-1">
               <h3 className="font-display font-bold text-sm text-white">Cipher AI</h3>
               <p className="text-[10px] uppercase tracking-widest text-primary/80">Voice Assistant</p>
+
               <div className="flex items-center gap-2 pt-2">
                 <div className={cn(
                   "h-1.5 w-1.5 rounded-full",
