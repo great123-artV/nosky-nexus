@@ -100,7 +100,7 @@ export function GlobalOverlays() {
             <div className="flex-1 min-w-0">
               <h4 className="font-display font-bold text-sm text-foreground">Install Nosky HomeOS</h4>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Experience smart living as a native app on your device.
+                For a faster and better smart-home experience, install the app.
               </p>
               <div className="flex gap-2 mt-3">
                 <button
@@ -113,8 +113,9 @@ export function GlobalOverlays() {
                   onClick={handleDismissInstall}
                   className="px-3 py-2 rounded-lg text-xs font-medium hover:bg-white/5 transition-colors text-foreground"
                 >
-                  Dismiss
+                  Maybe Later
                 </button>
+
               </div>
             </div>
           </div>
