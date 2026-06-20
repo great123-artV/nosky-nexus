@@ -55,13 +55,15 @@ export function GlobalOverlays() {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
     if (deferredPrompt && !pwaDismissed && !showInstallBanner && !isPwaInstalled) {
       const timer = setTimeout(() => {
         setShowInstallBanner(true);
-      }, 3000);
+      }, 30000);
       return () => clearTimeout(timer);
     }
-  }, [deferredPrompt, pwaDismissed, showInstallBanner, isPwaInstalled]);
+  }, [user, deferredPrompt, pwaDismissed, showInstallBanner, isPwaInstalled]);
+
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
