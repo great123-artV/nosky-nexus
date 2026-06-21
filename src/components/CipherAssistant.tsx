@@ -72,35 +72,57 @@ export function CipherAssistant() {
       let finalResponse = result.response;
 
       if (result.intent === "device_control" && result.device && result.action) {
-        const targetZone = zones.find(
-          (z) => z.name.toLowerCase() === result.zone?.toLowerCase(),
-        );
+        const deviceQuery = result.device.toLowerCase().trim();
+        const zoneQuery = result.zone?.toLowerCase().trim();
 
-        let targetDevice;
-        if (targetZone) {
-          targetDevice = devices.find(
-            (d) =>
-              d.zoneId === targetZone.id &&
-              d.name.toLowerCase() === result.device?.toLowerCase(),
-          );
-        } else {
-          const matchingDevices = devices.filter(
-            (d) => d.name.toLowerCase() === result.device?.toLowerCase(),
-          );
-          if (matchingDevices.length === 1) {
-            targetDevice = matchingDevices[0];
-          } else if (matchingDevices.length > 1) {
-            finalResponse = `I found multiple devices named ${result.device}. Which room?`;
+        // Infer zone from device query if missing (e.g. "parlor bulb 1")
+        let inferredZone = zones.find((z) => z.name.toLowerCase() === zoneQuery);
+        let cleanedDeviceQuery = deviceQuery;
+        if (!inferredZone) {
+          for (const z of zones) {
+            const zn = z.name.toLowerCase();
+            if (deviceQuery.includes(zn)) {
+              inferredZone = z;
+              cleanedDeviceQuery = deviceQuery.replace(zn, "").trim();
+              break;
+            }
           }
+        }
+
+        const score = (d: typeof devices[number]) => {
+          const dn = d.name.toLowerCase();
+          if (dn === cleanedDeviceQuery) return 100;
+          if (cleanedDeviceQuery.includes(dn)) return 80;
+          if (dn.includes(cleanedDeviceQuery) && cleanedDeviceQuery.length >= 3) return 60;
+          // word overlap
+          const words = cleanedDeviceQuery.split(/\s+/).filter(Boolean);
+          const overlap = words.filter((w) => dn.includes(w)).length;
+          return overlap > 0 ? 20 + overlap * 5 : 0;
+        };
+
+        const pool = inferredZone ? devices.filter((d) => d.zoneId === inferredZone!.id) : devices;
+        const ranked = pool
+          .map((d) => ({ d, s: score(d) }))
+          .filter((x) => x.s > 0)
+          .sort((a, b) => b.s - a.s);
+
+        let targetDevice: typeof devices[number] | undefined = ranked[0]?.d;
+        if (!inferredZone && ranked.length > 1 && ranked[0].s === ranked[1].s) {
+          finalResponse = `I found multiple devices matching ${result.device}. Which room?`;
+          targetDevice = undefined;
         }
 
         if (targetDevice) {
           const isComingSoon = ["AC", "Fan", "Inverter"].includes(targetDevice.type);
+          const zoneName = zones.find((z) => z.id === targetDevice!.zoneId)?.name ?? "";
           if (isComingSoon) {
             finalResponse = `${targetDevice.type} control is coming soon.`;
           } else {
             setPowerState(targetDevice.id, result.action);
+            finalResponse = `${zoneName} ${targetDevice.name} switched ${result.action}.`;
           }
+        } else if (finalResponse === result.response) {
+          finalResponse = `I couldn't find a device matching ${result.device}.`;
         }
       }
 
