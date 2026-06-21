@@ -195,7 +195,7 @@ export function GlobalOverlays() {
             </button>
             <div className="flex items-center gap-3 mb-4">
               <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center">
-                <Download className="h-6 w-6 text-primary" />
+                <Home className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <h4 className="font-display font-bold text-base text-foreground">
