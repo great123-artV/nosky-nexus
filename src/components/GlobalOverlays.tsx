@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Download, WifiOff, Share, Plus, X } from "lucide-react";
+import { Home, WifiOff, Share, Plus, X, Check } from "lucide-react";
 import { useSettingsStore } from "@/hooks/useSettingsStore";
 import { useAuth } from "@/hooks/useAuth";
 
