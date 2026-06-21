@@ -199,10 +199,10 @@ export function GlobalOverlays() {
               </div>
               <div>
                 <h4 className="font-display font-bold text-base text-foreground">
-                  Install on iPhone
+                  Add to Home Screen
                 </h4>
                 <p className="text-[10px] uppercase tracking-widest text-primary/80">
-                  Add to Home Screen
+                  iPhone &amp; iPad
                 </p>
               </div>
             </div>
