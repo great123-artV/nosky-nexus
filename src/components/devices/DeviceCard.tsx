@@ -48,6 +48,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
       className={cn(
         "glass rounded-3xl border border-white/5 transition-all duration-300 overflow-hidden",
         isOpen ? "ring-1 ring-primary/20 shadow-2xl" : "hover:border-primary/20 hover:scale-[1.01]",
+        justChanged && "ring-2 ring-primary/60 shadow-[0_0_30px_rgba(59,130,246,0.35)] scale-[1.015]",
       )}
     >
       <div className="p-5">
