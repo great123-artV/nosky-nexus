@@ -120,34 +120,59 @@ export function GlobalOverlays() {
         </div>
       )}
 
-      {showInstallBanner && !showIosInstructions && (
+      {showInstallBanner && !showIosInstructions && !isPwaInstalled && (
         <div className="fixed bottom-24 md:bottom-8 left-4 right-4 md:left-auto md:right-8 md:w-80 glass-strong rounded-2xl p-4 shadow-2xl border border-primary/20 z-[200] animate-in slide-in-from-bottom-8 duration-500">
           <div className="flex items-start gap-4">
             <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-              <Download className="h-5 w-5 text-primary" />
+              <Home className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="font-display font-bold text-sm text-foreground">
-                Install Nosky HomeOS
+                Add Nosky HomeOS to Home Screen
               </h4>
               <p className="text-xs text-muted-foreground mt-0.5">
-                For a faster and better smart-home experience, install the app.
+                Get a faster, full-screen smart-home experience.
               </p>
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={handleInstall}
                   className="flex-1 bg-primary text-primary-foreground py-2 rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors glow-primary"
                 >
-                  Install App
+                  Add to Home Screen
                 </button>
                 <button
                   onClick={handleDismissInstall}
                   className="px-3 py-2 rounded-lg text-xs font-medium hover:bg-white/5 transition-colors text-foreground"
                 >
-                  Maybe Later
+                  Not Now
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showInstalledSuccess && (
+        <div className="fixed bottom-24 md:bottom-8 left-4 right-4 md:left-auto md:right-8 md:w-80 glass-strong rounded-2xl p-4 shadow-2xl border border-emerald-400/30 z-[200] animate-in slide-in-from-bottom-8 duration-500">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-xl bg-emerald-400/20 flex items-center justify-center shrink-0">
+              <Check className="h-5 w-5 text-emerald-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="font-display font-bold text-sm text-foreground">
+                Installed successfully
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Nosky HomeOS is now on your home screen.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowInstalledSuccess(false)}
+              className="text-muted-foreground hover:text-white p-1 rounded-lg hover:bg-white/5"
+              aria-label="Dismiss"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       )}
