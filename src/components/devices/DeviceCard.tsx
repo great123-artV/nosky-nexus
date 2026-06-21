@@ -21,10 +21,22 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 export function DeviceCard({ device }: DeviceCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [justChanged, setJustChanged] = useState(false);
+  const prevStateRef = useRef(device.powerState);
   const { togglePowerState, setPowerState, zones } = useDeviceStore();
   const isActive = device.powerState === "on";
   const isOnline = device.status === "online";
   const zoneName = zones.find((z) => z.id === device.zoneId)?.name || "Unknown Zone";
+
+  // Real-time sync flash — fires whenever powerState changes (voice, switch, or external update)
+  useEffect(() => {
+    if (prevStateRef.current !== device.powerState) {
+      prevStateRef.current = device.powerState;
+      setJustChanged(true);
+      const t = setTimeout(() => setJustChanged(false), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [device.powerState]);
 
   const Icon = ICON_MAP[device.type] || Lightbulb;
 
