@@ -106,7 +106,7 @@ export function CipherAssistant() {
           .filter((x) => x.s > 0)
           .sort((a, b) => b.s - a.s);
 
-        let targetDevice = ranked[0]?.d;
+        let targetDevice: typeof devices[number] | undefined = ranked[0]?.d;
         if (!inferredZone && ranked.length > 1 && ranked[0].s === ranked[1].s) {
           finalResponse = `I found multiple devices matching ${result.device}. Which room?`;
           targetDevice = undefined;
