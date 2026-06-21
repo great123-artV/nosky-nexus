@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Device } from "./types";
 import { Lightbulb, Plug, Wind, Battery, Thermometer, ChevronDown, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
