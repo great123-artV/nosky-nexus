@@ -59,6 +59,8 @@ export function GlobalOverlays() {
       setDeferredPrompt(null);
       setShowInstallBanner(false);
       setIsPwaInstalled(true);
+      setShowInstalledSuccess(true);
+      setTimeout(() => setShowInstalledSuccess(false), 5000);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
