@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Device } from "./types";
 import { Lightbulb, Plug, Wind, Battery, Thermometer, ChevronDown, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,10 +21,22 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 export function DeviceCard({ device }: DeviceCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [justChanged, setJustChanged] = useState(false);
+  const prevStateRef = useRef(device.powerState);
   const { togglePowerState, setPowerState, zones } = useDeviceStore();
   const isActive = device.powerState === "on";
   const isOnline = device.status === "online";
   const zoneName = zones.find((z) => z.id === device.zoneId)?.name || "Unknown Zone";
+
+  // Real-time sync flash — fires whenever powerState changes (voice, switch, or external update)
+  useEffect(() => {
+    if (prevStateRef.current !== device.powerState) {
+      prevStateRef.current = device.powerState;
+      setJustChanged(true);
+      const t = setTimeout(() => setJustChanged(false), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [device.powerState]);
 
   const Icon = ICON_MAP[device.type] || Lightbulb;
 
@@ -36,6 +48,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
       className={cn(
         "glass rounded-3xl border border-white/5 transition-all duration-300 overflow-hidden",
         isOpen ? "ring-1 ring-primary/20 shadow-2xl" : "hover:border-primary/20 hover:scale-[1.01]",
+        justChanged && "ring-2 ring-primary/60 shadow-[0_0_30px_rgba(59,130,246,0.35)] scale-[1.015]",
       )}
     >
       <div className="p-5">
