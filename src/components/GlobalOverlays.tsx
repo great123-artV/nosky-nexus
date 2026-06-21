@@ -38,6 +38,7 @@ export function GlobalOverlays() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [showIosInstructions, setShowIosInstructions] = useState(false);
+  const [showInstalledSuccess, setShowInstalledSuccess] = useState(false);
   const [isIos, setIsIos] = useState(false);
 
   useEffect(() => {
