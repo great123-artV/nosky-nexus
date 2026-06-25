@@ -189,13 +189,8 @@ function RootComponent() {
       setIsPwaInstalled(true);
     }
 
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js").catch((err) => {
-          console.error("SW registration failed:", err);
-        });
-      });
-    }
+    // Guarded SW registration (production only, never in Lovable preview/dev)
+    import("@/lib/registerSW").then((m) => m.registerServiceWorker());
 
     const handleBeforeInstallPrompt = (e: any) => {
       console.log("beforeinstallprompt fired");

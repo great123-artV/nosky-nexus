@@ -78,14 +78,15 @@ export function GlobalOverlays() {
     };
   }, [setPwaInstallable, setIsPwaInstalled]);
 
-  // Show install banner ~10s after sign-in when the app is installable
+  // Pop install banner shortly after the app loads when installable.
+  // Shows for both signed-in and anonymous visitors so the PWA prompt is visible.
   useEffect(() => {
-    if (!user || pwaDismissed || isPwaInstalled || isInStandaloneMode()) return;
+    if (pwaDismissed || isPwaInstalled || isInStandaloneMode()) return;
     const installable = !!deferredPrompt || isIos;
     if (!installable) return;
-    const timer = setTimeout(() => setShowInstallBanner(true), 10000);
+    const timer = setTimeout(() => setShowInstallBanner(true), 3000);
     return () => clearTimeout(timer);
-  }, [user, deferredPrompt, isIos, pwaDismissed, isPwaInstalled]);
+  }, [deferredPrompt, isIos, pwaDismissed, isPwaInstalled]);
 
   const handleInstall = async () => {
     if (deferredPrompt) {
