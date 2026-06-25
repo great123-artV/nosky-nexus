@@ -9,9 +9,11 @@ import {
   User,
   LogOut,
   X,
+  Bell,
   LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useNotifications } from "@/hooks/useNotifications";
 import { CipherAssistant } from "./CipherAssistant";
 
 const nav = [
@@ -32,6 +34,7 @@ export function AppShell({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const { profile, signOut } = useAuth();
+  const unread = useNotifications((s) => s.items.filter((n) => !n.read).length);
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -164,6 +167,19 @@ export function AppShell({
                 >
                   <Search className="h-4 w-4 text-muted-foreground" />
                 </button>
+
+                <Link
+                  to="/notifications"
+                  aria-label="Notifications"
+                  className="relative glass h-9 w-9 rounded-lg grid place-items-center hover:bg-accent transition-colors"
+                >
+                  <Bell className="h-4 w-4 text-muted-foreground" />
+                  {unread > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold grid place-items-center glow-primary">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  )}
+                </Link>
 
                 <Link
                   to="/settings"
