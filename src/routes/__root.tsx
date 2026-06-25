@@ -147,7 +147,7 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-const PUBLIC_PATHS = ["/auth", "/legal/privacy", "/legal/terms"];
+const PUBLIC_PATHS = ["/auth", "/reset-password", "/legal/privacy", "/legal/terms"];
 
 function AuthGate({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
