@@ -56,6 +56,13 @@ function AuthPage() {
             ))}
           </div>
 
+          <GoogleButton mode={mode} />
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">or</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+
           {mode === "signin" ? <SignInForm /> : <SignUpForm />}
         </div>
 
@@ -67,12 +74,45 @@ function AuthPage() {
   );
 }
 
+function GoogleButton({ mode }: { mode: "signin" | "signup" }) {
+  const [busy, setBusy] = useState(false);
+  const onClick = async () => {
+    setBusy(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/` },
+    });
+    if (error) {
+      setBusy(false);
+      toast.error(error.message);
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={busy}
+      className="w-full h-11 rounded-xl glass border border-border hover:bg-accent/60 transition-all flex items-center justify-center gap-3 text-sm font-medium disabled:opacity-50"
+    >
+      {busy ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.2s2.7-6.2 6-6.2c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3 14.7 2 12 2 6.9 2 2.8 6.1 2.8 11.2S6.9 20.4 12 20.4c6.9 0 9.5-4.8 9.5-7.3 0-.5 0-.9-.1-1.3H12z" />
+        </svg>
+      )}
+      {mode === "signup" ? "Sign up with Google" : "Continue with Google"}
+    </button>
+  );
+}
+
 function SignInForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +125,20 @@ function SignInForm() {
       toast.success("Welcome back");
       navigate({ to: "/" });
     }
+  };
+
+  const forgotPassword = async () => {
+    if (!email.includes("@")) {
+      toast.error("Enter your email above first");
+      return;
+    }
+    setResetBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setResetBusy(false);
+    if (error) toast.error(error.message);
+    else toast.success("Reset link sent. Check your email.");
   };
 
   return (
@@ -121,6 +175,17 @@ function SignInForm() {
           </button>
         </div>
       </Field>
+      <div className="flex justify-end -mt-2">
+        <button
+          type="button"
+          onClick={forgotPassword}
+          disabled={resetBusy}
+          className="text-xs text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
+        >
+          {resetBusy && <Loader2 className="h-3 w-3 animate-spin" />}
+          Forgot password?
+        </button>
+      </div>
       <button
         type="submit"
         disabled={busy}
