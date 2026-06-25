@@ -80,7 +80,7 @@ function GoogleButton({ mode }: { mode: "signin" | "signup" }) {
     setBusy(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
+      options: { redirectTo: "https://noskyhomeos.vercel.app/" },
     });
     if (error) {
       setBusy(false);
@@ -134,7 +134,7 @@ function SignInForm() {
     }
     setResetBusy(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: "https://noskyhomeos.vercel.app/reset-password",
     });
     setResetBusy(false);
     if (error) toast.error(error.message);
@@ -224,7 +224,7 @@ function SignUpForm() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/`,
+        emailRedirectTo: "https://noskyhomeos.vercel.app/",
         data: {
           full_name: fullName.trim(),
           accepted_terms: true,
