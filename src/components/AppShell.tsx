@@ -5,7 +5,6 @@ import {
   Home,
   Settings,
   Search,
-  Power,
   User,
   LogOut,
   X,
@@ -15,6 +14,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import { CipherAssistant } from "./CipherAssistant";
+import { Logo } from "./Logo";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -74,13 +74,8 @@ export function AppShell({
             to="/"
             className="h-16 flex items-center gap-3 px-6 border-b border-sidebar-border hover:bg-sidebar-accent/30 transition-colors"
           >
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/40 grid place-items-center glow-primary">
-              <Power className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
-            </div>
+            <Logo size="md" />
             <div className="min-w-0">
-              <div className="font-display font-semibold text-sm tracking-tight truncate">
-                Nosky HomeOS
-              </div>
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 v1.0 · Online
               </div>
@@ -128,12 +123,8 @@ export function AppShell({
           <header className="h-16 shrink-0 border-b border-border bg-background/40 backdrop-blur-xl sticky top-0 z-30">
             <div className="h-full px-4 md:px-8 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <Link
-                  to="/"
-                  className="md:hidden h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/40 grid place-items-center shrink-0"
-                  aria-label="Home"
-                >
-                  <Power className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
+                <Link to="/" className="md:hidden shrink-0" aria-label="Home">
+                  <Logo size="md" />
                 </Link>
                 <div className="min-w-0">
                   <h1 className="font-display text-lg md:text-xl font-semibold truncate text-gradient">
