@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Power, Loader2, Eye, EyeOff, ShieldCheck, ShieldAlert, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { getPasswordStrength, cn } from "@/lib/utils";
 
@@ -78,14 +79,17 @@ function GoogleButton({ mode }: { mode: "signin" | "signup" }) {
   const [busy, setBusy] = useState(false);
   const onClick = async () => {
     setBusy(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: "https://noskyhomeos.vercel.app/" },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
-    if (error) {
+    if (result.error) {
       setBusy(false);
-      toast.error(error.message);
+      toast.error(result.error.message ?? "Google sign-in failed");
+      return;
     }
+    if (result.redirected) return;
+    // Session established
+    toast.success("Welcome");
   };
   return (
     <button
