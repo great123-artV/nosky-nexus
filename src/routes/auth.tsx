@@ -7,6 +7,11 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { getPasswordStrength, cn } from "@/lib/utils";
 
+const SITE_URL =
+  import.meta.env.MODE === "production"
+    ? "https://noskyhomeos.vercel.app"
+    : window.location.origin;
+
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
@@ -80,7 +85,7 @@ function GoogleButton({ mode }: { mode: "signin" | "signup" }) {
   const onClick = async () => {
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: SITE_URL,
     });
     if (result.error) {
       setBusy(false);
@@ -138,7 +143,7 @@ function SignInForm() {
     }
     setResetBusy(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://noskyhomeos.vercel.app/reset-password",
+      redirectTo: `${SITE_URL}/reset-password`,
     });
     setResetBusy(false);
     if (error) toast.error(error.message);
@@ -228,7 +233,7 @@ function SignUpForm() {
       email,
       password,
       options: {
-        emailRedirectTo: "https://noskyhomeos.vercel.app/",
+        emailRedirectTo: `${SITE_URL}/`,
         data: {
           full_name: fullName.trim(),
           accepted_terms: true,
