@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Power, Loader2, Eye, EyeOff, ShieldCheck, ShieldAlert, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { getPasswordStrength, cn } from "@/lib/utils";
 
