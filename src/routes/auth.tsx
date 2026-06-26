@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Power, Loader2, Eye, EyeOff, ShieldCheck, ShieldAlert, Shield } from "lucide-react";
+import { Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { getPasswordStrength, cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -33,10 +34,7 @@ function AuthPage() {
 
       <div className="relative w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary/40 grid place-items-center glow-primary mb-4">
-            <Power className="h-6 w-6 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          <h1 className="font-display text-2xl font-semibold text-gradient">Nosky HomeOS</h1>
+          <Logo size="xl" className="mb-4" />
           <p className="text-xs text-muted-foreground mt-1">Smart Living. Seamlessly Connected.</p>
         </div>
 
