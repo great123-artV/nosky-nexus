@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Home, WifiOff, Share, Plus, X, Check } from "lucide-react";
+import { Home, WifiOff, Share, Plus, X, Check, Download } from "lucide-react";
 import { useSettingsStore } from "@/hooks/useSettingsStore";
 import { useAuth } from "@/hooks/useAuth";
+
+const SESSION_DISMISS_KEY = "nosky:pwa-banner-dismissed-session";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
