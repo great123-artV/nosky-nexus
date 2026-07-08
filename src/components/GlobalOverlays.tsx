@@ -80,14 +80,18 @@ export function GlobalOverlays() {
   }, [setPwaInstallable, setIsPwaInstalled]);
 
   // Pop install banner shortly after the app loads when installable.
-  // Shows for both signed-in and anonymous visitors so the PWA prompt is visible.
+  // Shows on every visit until the user installs (session-scoped dismiss only).
   useEffect(() => {
-    if (pwaDismissed || isPwaInstalled || isInStandaloneMode()) return;
+    if (isPwaInstalled || isInStandaloneMode()) return;
+    const dismissedThisSession =
+      typeof sessionStorage !== "undefined" &&
+      sessionStorage.getItem(SESSION_DISMISS_KEY) === "1";
+    if (dismissedThisSession) return;
     const installable = !!deferredPrompt || isIos;
     if (!installable) return;
     const timer = setTimeout(() => setShowInstallBanner(true), 3000);
     return () => clearTimeout(timer);
-  }, [deferredPrompt, isIos, pwaDismissed, isPwaInstalled]);
+  }, [deferredPrompt, isIos, isPwaInstalled]);
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -109,9 +113,21 @@ export function GlobalOverlays() {
     }
   };
 
+  // Listen for "Download App" button clicks anywhere in the app.
+  useEffect(() => {
+    const onRequestInstall = () => {
+      if (isPwaInstalled || isInStandaloneMode()) return;
+      handleInstall();
+    };
+    window.addEventListener("nosky:install", onRequestInstall);
+    return () => window.removeEventListener("nosky:install", onRequestInstall);
+  });
+
   const handleDismissInstall = () => {
     setShowInstallBanner(false);
-    setPwaDismissed(true);
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem(SESSION_DISMISS_KEY, "1");
+    }
   };
 
   return (
