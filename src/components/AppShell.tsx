@@ -37,6 +37,16 @@ export function AppShell({
   const navigate = useNavigate();
   const { profile, signOut } = useAuth();
   const unread = useNotifications((s) => s.items.filter((n) => !n.read).length);
+  const { isPwaInstalled, pwaInstallable } = useSettingsStore();
+  const [isIosDevice, setIsIosDevice] = useState(false);
+  useEffect(() => {
+    if (typeof navigator === "undefined") return;
+    const ua = navigator.userAgent || "";
+    const iPad = /iPad/.test(ua) || (/Macintosh/.test(ua) && "ontouchend" in document);
+    setIsIosDevice(/iPhone|iPod/.test(ua) || iPad);
+  }, []);
+  const showDownloadBtn = !isPwaInstalled && (pwaInstallable || isIosDevice);
+  const triggerInstall = () => window.dispatchEvent(new CustomEvent("nosky:install"));
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
