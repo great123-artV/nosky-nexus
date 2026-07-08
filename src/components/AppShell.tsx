@@ -171,6 +171,26 @@ export function AppShell({
                   <Search className="h-4 w-4 text-muted-foreground" />
                 </button>
 
+                {showDownloadBtn && (
+                  <button
+                    onClick={triggerInstall}
+                    aria-label="Download app"
+                    className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors glow-primary"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download App
+                  </button>
+                )}
+                {showDownloadBtn && (
+                  <button
+                    onClick={triggerInstall}
+                    aria-label="Download app"
+                    className="sm:hidden glass h-9 w-9 rounded-lg grid place-items-center hover:bg-accent transition-colors border border-primary/40"
+                  >
+                    <Download className="h-4 w-4 text-primary" />
+                  </button>
+                )}
+
                 <Link
                   to="/notifications"
                   aria-label="Notifications"
