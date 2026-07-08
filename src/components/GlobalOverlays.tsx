@@ -30,9 +30,8 @@ function isInStandaloneMode() {
 }
 
 export function GlobalOverlays() {
-  const { user } = useAuth();
-  const { pwaDismissed, setPwaDismissed, isPwaInstalled, setPwaInstallable, setIsPwaInstalled } =
-    useSettingsStore();
+  useAuth();
+  const { isPwaInstalled, setPwaInstallable, setIsPwaInstalled } = useSettingsStore();
 
   const [isOffline, setIsOffline] = useState(
     typeof navigator !== "undefined" ? !navigator.onLine : false,
