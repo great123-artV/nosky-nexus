@@ -9,10 +9,12 @@ import {
   LogOut,
   X,
   Bell,
+  Download,
   LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useSettingsStore } from "@/hooks/useSettingsStore";
 import { CipherAssistant } from "./CipherAssistant";
 import { Logo } from "./Logo";
 
